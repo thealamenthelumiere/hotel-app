@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы - Талион Империал</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="scripts/reviews.js" defer></script>
+</head>
+
+<body>
+<header class="header">
+    <div class="header__container container">
+        <div class="logo">
+            <a href="page.html">
+                <h1>Талион Империал</h1>
+            </a>
+        </div>
+        <nav id="main-nav">
+            <ul>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="rooms.html">Номера</a></li>
+                <li><a href="constructor.html">Досуг</a></li>
+                <li><a href="services.html">Услуги</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+                <li><a href="reviews.html" class="active">Отзывы</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section id="reviews">
+        <h2>Отзывы наших гостей</h2>
+        <div id="reviews-container">
+            <div id="preloader" class="preloader">
+                Загрузка отзывов...
+            </div>
+        </div>
+        <button id="load-reviews" class="button">Загрузить отзывы</button>
+
+        <section id="add-review">
+          <h2>Оставить отзыв</h2>
+          <form id="add-review-form" class="review-form">
+              <input type="text" id="new-review-name-input" placeholder="Ваше имя" required>
+              <input type="email" id="new-review-email-input" placeholder="Ваш email" required>
+              <textarea id="new-review-body-input" placeholder="Ваш отзыв" required></textarea>
+              <button type="submit" class="button">Отправить отзыв</button>
+          </form>
+        </section>
+
+
+    </section>
+</main>
+
+<footer>
+    <p>© 2023 Талион Империал. Все права защищены.</p>
+</footer>
+</body>
+
+</html>
