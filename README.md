@@ -1,3 +1,15 @@
+Author: Christina-Sofiia Yusupova
+Project: Hotel-App
+Link: https://hotel-app-3zl4.onrender.com/
+
+OR
+
+http://localhost:3000/page.html
+
+
+
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
