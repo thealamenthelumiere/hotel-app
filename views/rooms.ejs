@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<%- include('partials/head') %>
+<title><%= title || 'Номера - Талион Империал' %></title>
+</head>
+<body>
+<%- include('partials/header') %>
+
+<main>
+    <section id="rooms">
+    <div class="container">
+        <h2>Номера</h2>
+        <p>Описание различных категорий номеров, доступных в нашем отеле...</p>
+        <!-- Здесь можно будет выводить список номеров из переданной переменной, например: -->
+        <% if (locals.rooms && rooms.length) { %>
+        <% rooms.forEach(room => { %>
+            <div class="room">
+            <h3><%= room.title %></h3>
+            <p><%= room.description %></p>
+            </div>
+        <% }) %>
+        <% } else { %>
+        <!-- Заглушка, пока данные не передаются -->
+        <div class="room">
+            <h3>Стандарт</h3>
+            <p>Уютный номер с современным дизайном и всеми удобствами.</p>
+        </div>
+        <div class="room">
+            <h3>Люкс</h3>
+            <p>Просторный номер с гостиной зоной и панорамным видом.</p>
+        </div>
+        <% } %>
+    </div>
+    </section>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/modal') %>
+<%- include('partials/scripts') %>
+</body>
+</html>

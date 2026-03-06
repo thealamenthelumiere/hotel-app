@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<%- include('partials/head') %>
+</head>
+<body>
+<%- include('partials/header') %>
+
+<main>
+    <!-- Секция Hero со слайдером (Swiper) -->
+    <section class="swiper section section--hero">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide video_slide">
+        <div class="container">
+            <div class="section__container">
+            <h2 class="section__title">Добро пожаловать в Талион Империал</h2>
+            <p>Люкс-отель в сердце города.</p>
+            <button class="section__button button">Забронировать номер</button>
+            </div>
+            <div class="section__media">
+            <video class="section__video video" autoplay loop muted preload="metadata" src="vid.mp4">
+                Ваш браузер не поддерживает видео.
+            </video>
+            </div>
+        </div>
+        </div>
+        <div class="swiper-slide"><img src="images/ph1.webp" alt="Галерея 1" /></div>
+        <div class="swiper-slide"><img src="images/ph2.webp" alt="Галерея 2" /></div>
+        <!-- Добавьте остальные слайды по необходимости -->
+    </div>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-scrollbar"></div>
+    </section>
+
+    <!-- Секция "О нас" -->
+    <section id="about">
+    <div class="container">
+        <h2>О нас</h2>
+        <p>«Талион Империал Отель» — это уникальный исторический отель, расположенный в знаменитом дворце Елисеевых в самом сердце Санкт-Петербурга — на пересечении Невского проспекта и набережной реки Мойки.</p>
+    </div>
+    </section>
+
+    <!-- Секция "Номера" с динамическими карточками -->
+    <section id="rooms">
+    <div class="container">
+        <h2>Номера</h2>
+        <% if (locals.rooms && rooms.length) { %>
+    <% rooms.forEach(room => { %>
+            <%- include('partials/room-card', { room }) %>
+    <% }) %>
+        <% } else { %>
+    <!-- Заглушка, если данные не переданы -->
+    <div class="room"><h3>Люкс</h3><p>Номер комфорт класса с двумя спальнями</p></div>
+    <div class="room"><h3>Стандарт</h3><p>Номер с двухместной кроватью и всеми удобствами</p></div>
+        <% } %>
+    </div>
+    </section>
+<section id="gallery">
+    <div class="container">
+        <h2>Галерея отеля</h2>
+        <div class="gallery-grid">
+            <img src="/images/ph1.webp" alt="Галерея 1">
+            <img src="/images/ph2.webp" alt="Галерея 2">
+            <img src="/images/ph3.webp" alt="Галерея 3">
+            <!-- добавьте остальные изображения -->
+        </div>
+    </div>
+</section>
+    <!-- Секция "Услуги" (статическая часть) -->
+    <section id="services">
+    <div class="container">
+        <h2>Услуги</h2>
+        <ul>
+    <li>Спа</li>
+    <li>Ресторан</li>
+    <li>Бассейн</li>
+        </ul>
+        <div class="table-container">
+    <div class="table-caption">Аренда залов</div>
+    <div class="table-grid">
+            <div class="table-header">Название зала</div>
+            <div class="table-header">Количество мест</div>
+            <div class="table-header">Сумма</div>
+
+            <div class="table-row">Империал</div><div class="table-row">350</div><div class="table-row">100 000</div>
+            <div class="table-row">Баккара</div><div class="table-row">30</div><div class="table-row">50 000</div>
+            <div class="table-row">Ореховая гостинная</div><div class="table-row">30</div><div class="table-row">45 000</div>
+    </div>
+        </div>
+
+        <table>
+    <thead><tr><th>Заголовок 1</th><th>Заголовок 2</th><th>Заголовок 3</th></tr></thead>
+    <tbody>
+            <tr><td>Строка 1, ячейка 1</td><td>Строка 1, ячейка 2</td><td>Строка 1, ячейка 3</td></tr>
+            <tr><td>Строка 2, ячейка 1</td><td>Строка 2, ячейка 2</td><td>Строка 2, ячейка 3</td></tr>
+            <!-- остальные строки -->
+    </tbody>
+        </table>
+    </div>
+    </section>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/modal') %>
+<%- include('partials/scripts') %>
+</body>
+</html>

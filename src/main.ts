@@ -12,7 +12,9 @@ async function bootstrap() {
   const staticPath = join(__dirname, '..', 'src', 'public');
   console.log('Serving static from:', staticPath);
   app.useStaticAssets(staticPath, { index: 'page.html' });
-
+  app.setViewEngine('ejs');
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Сервер запущен на порту ${port}`);

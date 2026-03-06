@@ -1,0 +1,30 @@
+<header class="header">
+  <div class="header__container container">
+    <div class="logo">
+      <a href="/">
+        <h1>Талион Империал</h1>
+      </a>
+    </div>
+    <nav id="main-nav">
+      <ul>
+        <li><a href="/about">О нас</a></li>
+        <li><a href="/rooms">Номера</a></li>
+        <li><a href="/constructor">Досуг</a></li>
+        <li><a href="/services">Услуги</a></li>
+        <li><a href="/contact">Контакты</a></li>
+        <li><a href="/reviews">Отзывы</a></li>
+      </ul>
+    </nav>
+    <!-- Блок авторизации (гость/пользователь) -->
+    <div class="auth-section">
+      <% if (locals.isAuthenticated) { %>
+        <span class="user-greeting">Вы вошли как <strong><%= user %></strong></span>
+        <a href="/?auth=0" class="auth-link">Выйти</a>
+      <% } else { %>
+        <a href="/?auth=1" class="auth-link">Войти</a>
+        <span class="auth-separator">|</span>
+        <a href="/register" class="auth-link">Регистрация</a>
+      <% } %>
+    </div>
+  </div>
+</header>

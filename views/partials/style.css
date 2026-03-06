@@ -1,0 +1,695 @@
+:root {
+    --header-height: 80px;
+}
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+/* Основные стили */
+body {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+    max-width: 100%;
+    box-sizing: border-box;
+    
+}
+/*html, body {
+    overflow-x: hidden; /* Отключаем горизонтальный скролл */
+    /*overflow-y: hidden;*/
+   /* width: 100%;
+}*/
+/* Блок авторизации в шапке */
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px; /* отступ от меню */
+    color: #fff;
+    font-size: 14px;
+}
+
+.auth-link {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.auth-link:hover {
+    color: #ffcc00;
+    text-decoration: underline;
+}
+
+.auth-separator {
+    color: #fff;
+    opacity: 0.7;
+}
+
+.user-greeting {
+    margin-right: 10px;
+}
+.video_slide {
+    position: relative;
+}
+.background-video {
+     position: static;
+     top: 50%;
+     left: 50%;
+     min-width: 100%;
+     min-height: 100%;
+     width: "1920";
+     height: "1024";
+     z-index: -1; /* Помещаем видео за контентом */
+}
+.content {
+     position: relative;
+     z-index: 1; /* Контент будет поверх видео */
+     color: white; /* Цвет текста для контраста */
+     text-align: justify;
+     padding: 20px;
+     }
+
+table {
+    width: 650px;
+    border-top: 7px solid rgb(98, 59, 5);
+    border-collapse: collapse;
+    text-align: justify;
+    margin-bottom: 20px;
+    border: 1px solid #dddddd;
+  }
+  
+  .item {
+    /* Стили для обычного состояния элемента */
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s ease; /* Плавное изменение цвета фона */
+  }
+  
+  .item.hover {
+    /* Стили для состояния наведения (hover) */
+    background-color: #f0f0f0;
+    border: 1px solid #aaa;
+    cursor: pointer; /* Меняем курсор на "указатель" */
+  }
+
+  thead {
+    text-align: center;
+      padding: 10px;
+      border: 3px solid rgb(98, 59, 5);
+      background-color: #966d6d;
+  }
+   tbody {
+    text-align: center;
+    padding: 10px;
+      border: 3px solid rgb(98, 59, 5);
+   }
+   .table-element:nth-child(odd) {
+    background: #6e3838;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+  
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 70rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+}
+
+
+
+.header {
+    background-color: #966d6d;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+.header__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 20px; /* Добавляет промежутки между пунктами меню */
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+
+
+.menu-toggle {
+    display: none;
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Стандартное меню */
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+}
+
+
+@media screen and (max-width: 1020px) {
+    .menu-toggle {
+        display: block;
+    }
+    nav ul {
+        display: none;
+        flex-direction: column;
+        background-color: #966d6d;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+
+    nav.active ul {
+        display: flex;
+    }
+}
+
+/* Контент и секции */
+/* #hero {
+    background: url('path/to/your/image.jpg') no-repeat center center/cover;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #8f6464;
+    text-align: center;
+}
+
+section {
+    padding: 20px;
+    margin: 20px 0;
+} */
+.section {
+    position: relative;
+    color: #f9f9f9;
+}
+.section--hero {
+    display: grid;
+    align-items: center;
+    justify-content: start;
+    min-height: calc(100dvh - var(--header-height));
+    margin-block-start: var(--header-height);
+    padding-block: 10rem;
+}
+/*.section__container {}
+.section__title {}
+.section__button {}*/
+.section__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+}
+.section__video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+    object-position: center;
+}
+
+/* Галерея */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.gallery-grid img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+}
+
+/* Стили для секции Программы лояльности */
+#loyalty-benefits {
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+}
+
+.loyalty-header {
+    background-color: #b59a92;
+    padding: 10px;
+    text-align: center;
+}
+
+.loyalty-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #fff;
+}
+
+.loyalty-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.loyalty-item {
+    padding: 15px;
+    border-bottom: 1px solid #b59a92;
+}
+
+.loyalty-item p {
+    margin: 0;
+    font-size: 1em;
+    color: #333;
+    line-height: 1.5;
+}
+
+.loyalty-item:nth-child(odd) {
+    background-color: #f0e9e7;
+}
+
+.loyalty-item:nth-child(even) {
+    background-color: #ffffff;
+}
+
+/* Футер */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #966d6d;
+    color: #fff;
+}
+
+.ad-banner {
+    background-color: #fff;
+    color: #000;
+    padding: 10px;
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+}
+
+.modal-content {
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav a.active {
+    color: #ffcc00; /* Цвет для активного пункта меню */
+}
+
+nav a.hover {
+    color: #ffa500; /* Цвет при наведении */
+}
+#main-nav a.active {
+    color: #f00; /* Example color for the active menu item */
+    font-weight: bold;
+}
+#main-nav a:hover {
+    color: #333; /* Example color for hover */
+    text-decoration: underline;
+}
+.schedule-container {
+    margin-top: 20px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.schedule-table tr:first-child td {
+    font-weight: bold;
+    background-color: #f4f4f4;
+}
+
+.schedule-table td[colspan] {
+    font-weight: bold;
+    background-color: #e0e0e0;
+}
+
+
+/* Фиксированная структура для футера */
+html, body {
+    /* height: 100%;
+    display: flex;
+    flex-direction: column; */
+    margin: 0;
+}
+
+/*body {
+    /* flex: 1 0 auto;
+    display: flex;
+    flex-direction: column; */
+
+
+/*main {
+    /* flex: 1 0 auto; */
+    /* padding-top: 80px; */
+
+
+/* Футер всегда внизу */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #966d6d;
+    color: #fff;
+    width: 100%;
+    flex-shrink: 0;
+    position: relative;
+}
+
+
+/* Отступы для активного меню и навигации */
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav a.active {
+    color: #ffcc00;
+}
+
+nav a.hover {
+    color: #ffa500;
+}
+.logo a {
+    color: #fff;
+    text-decoration: none;
+}
+/* Основная структура */
+/*html, body {
+    /* margin: 0;
+    padding: 0;
+    height: 100%; */
+
+
+/*body {
+    /* display: flex;
+    flex-direction: column; */
+
+
+/*main {
+    /* flex-grow: 1; */
+    /* Отступ для фиксированного хедера */
+    /* padding-top: 80px;  */
+    /* Высота экрана минус хедер и футер */
+    /* min-height: calc(100vh - 60px - 40px);  */
+
+
+/* Стандартное меню */
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+/* Футер всегда внизу */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #966d6d;
+    color: #fff;
+    width: 100%;
+    position: relative;
+    height: 40px;
+}
+
+/* Стили для отзывов */
+#reviews {
+    margin: 40px auto;
+    text-align: center;
+    max-width: 800px;
+}
+
+#reviews-container {
+    margin: 20px 0;
+}
+
+.review {
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.review h3 {
+    margin: 0 0 10px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.review p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.preloader {
+    font-size: 1.2em;
+    color: #888;
+}
+
+.button {
+    background-color: #8b0000;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: #a30000;
+}
+/* Стили для контейнера таблицы */
+.table-container {
+    margin: 20px 0;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.table-caption {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Использование Grid для таблицы */
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 равных колонки */
+    gap: 10px; /* Отступы между ячейками */
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Стили для заголовков */
+.table-header {
+    background-color: #8b0000; /* Темно-красный фон */
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+}
+
+/* Стили для строк таблицы */
+.table-row {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s;
+}
+
+/* Чётные и нечётные строки */
+.table-row:nth-child(odd) {
+    background-color: #f9f9f9; /* Светло-серый фон */
+}
+
+.table-row:nth-child(even) {
+    background-color: #fff; /* Белый фон */
+}
+
+/* Hover эффект */
+.table-row:hover {
+    background-color: #f2f2f2;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .table-grid {
+        grid-template-columns: 1fr; /* Одна колонка на мобильных */
+    }
+    .table-header {
+        text-align: left;
+        padding-left: 20px;
+    }
+}
+
+/* Общие стили для навигации */
+#main-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+#main-nav li {
+    margin: 0 15px;
+}
+
+#main-nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Эффект наведения */
+#main-nav a:hover {
+    background-color: #f2f2f2;
+    color: #8b0000; /* Цвет при наведении */
+}
+
+/* Стили для активного пункта меню */
+.about-page #main-nav a[href="about.html"],
+.rooms-page #main-nav a[href="rooms.html"],
+.constructor-page #main-nav a[href="constructor.html"],
+.services-page #main-nav a[href="services.html"],
+.contact-page #main-nav a[href="contact.html"] {
+    background-color: #8b0000; /* Активный фон */
+    color: #fff; /* Цвет текста */
+    font-weight: bold;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.preloader {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+.preloader::after {
+    content: "";
+    width: 40px;
+    height: 40px;
+    border: 4px solid #8b0000;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.swiper-container {
+    width: 100%;
+    height: 300px; 
+    margin: 20px 0;
+}
+.swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}

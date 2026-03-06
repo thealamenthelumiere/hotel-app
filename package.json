@@ -2,7 +2,9 @@
   "name": "hotel-app",
   "version": "0.0.1",
   "description": "",
-  "engines": { "node": "22.x"},
+  "engines": {
+    "node": "22.x"
+  },
   "author": "Christina-Sofiia Yusupova",
   "private": true,
   "license": "UNLICENSED",
@@ -24,6 +26,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "ejs": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
