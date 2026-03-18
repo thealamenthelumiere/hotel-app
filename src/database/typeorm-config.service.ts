@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { parse } from 'pg-connection-string';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
+  constructor(private configService: ConfigService) {}
+
   createTypeOrmOptions(): TypeOrmModuleOptions {
-    const databaseUrl = process.env.DATABASE_URL;
+    const databaseUrl = this.configService.get<string>('DATABASE_URL');
     if (!databaseUrl) {
       throw new Error('DATABASE_URL environment variable is not defined');
     }
@@ -23,6 +26,12 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       synchronize: false,
       migrationsRun: false,
       logging: true,
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     };
   }
 }

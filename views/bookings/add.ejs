@@ -1,0 +1,50 @@
+<%- include('../partials/header') %>
+<h1>Новое бронирование</h1>
+<form action="/bookings" method="post">
+  <div>
+    <label>Гость:</label>
+    <select name="guestId" required>
+      <option value="">Выберите гостя</option>
+      <% guests.forEach(guest => { %>
+        <option value="<%= guest.id %>"><%= guest.name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div>
+    <label>Номер:</label>
+    <select name="roomId" required>
+      <option value="">Выберите номер</option>
+      <% rooms.forEach(room => { %>
+        <option value="<%= room.id %>"><%= room.number %> (<%= room.type %>) - <%= room.pricePerNight %> руб./ночь</option>
+      <% }) %>
+    </select>
+  </div>
+  <div>
+    <label>Дата заезда:</label>
+    <input type="date" name="checkInDate" required>
+  </div>
+  <div>
+    <label>Дата выезда:</label>
+    <input type="date" name="checkOutDate" required>
+  </div>
+  <div>
+    <label>Доп. услуги:</label>
+    <% services.forEach(service => { %>
+      <div>
+        <input type="checkbox" name="serviceIds" value="<%= service.id %>">
+        <label><%= service.name %> (+<%= service.price %> руб.)</label>
+      </div>
+    <% }) %>
+  </div>
+  <div>
+    <label>Статус:</label>
+    <select name="status">
+      <option value="pending">Ожидает</option>
+      <option value="confirmed">Подтверждено</option>
+      <option value="cancelled">Отменено</option>
+      <option value="completed">Завершено</option>
+    </select>
+  </div>
+  <button type="submit">Создать</button>
+</form>
+<%- include('../partials/footer') %>

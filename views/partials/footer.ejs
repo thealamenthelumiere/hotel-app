@@ -5,4 +5,15 @@
     </div>
     <p>© 2023 Талион Империал. Все права защищены.</p>
     </div>
+    <script>
+  const eventSource = new EventSource('/bookings/sse');
+  const notyf = new Notyf();
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    notyf.success(data.message);
+  };
+  eventSource.onerror = (err) => {
+    console.error('SSE error', err);
+  };
+</script>
 </footer>

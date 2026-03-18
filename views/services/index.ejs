@@ -1,0 +1,15 @@
+<%- include('../partials/header') %>
+<h1>Список услуг</h1>
+<a href="/services/add">Добавить услугу</a>
+<ul>
+  <% services.forEach(service => { %>
+    <li>
+      <a href="/services/<%= service.id %>"><%= service.name %></a> - <%= service.price %> руб.
+      <form action="/services/<%= service.id %>?_method=DELETE" method="post" style="display:inline;">
+        <button type="submit">Удалить</button>
+      </form>
+      <a href="/services/<%= service.id %>/edit">Редактировать</a>
+    </li>
+  <% }) %>
+</ul>
+<%- include('../partials/footer') %>
