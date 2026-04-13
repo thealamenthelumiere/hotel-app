@@ -9,7 +9,7 @@ import { Guest } from '../../guests/entities/guest.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
-  USER = 'user',
+  GUEST = 'guest',
 }
 
 @Entity('users')
@@ -26,7 +26,7 @@ export class User {
   @Column({ nullable: true })
   name: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.GUEST })
   role: UserRole;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

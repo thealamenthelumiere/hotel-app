@@ -1,7 +1,7 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Редактировать гостя</h1>
-<form action="/guests/<%= guest.id %>/update" method="post">
+<form action="/guests/<%= guest.id %>?_method=PUT" method="post">
   <label>Имя: <input type="text" name="name" value="<%= guest.name %>" required></label>
   <label>Email: <input type="email" name="email" value="<%= guest.email %>" required></label>
   <label>Телефон: <input type="text" name="phone" value="<%= guest.phone || '' %>"></label>

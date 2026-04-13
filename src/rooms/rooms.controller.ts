@@ -8,10 +8,14 @@ import {
   Delete,
   Render,
   Redirect,
+  UseGuards,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('rooms')
 export class RoomsController {
@@ -25,12 +29,16 @@ export class RoomsController {
   }
 
   @Get('add')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Render('rooms/add')
   addForm() {
     return {};
   }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/rooms')
   async create(@Body() createRoomDto: CreateRoomDto) {
     await this.roomsService.create(createRoomDto);
@@ -44,6 +52,8 @@ export class RoomsController {
   }
 
   @Get(':id/edit')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Render('rooms/edit')
   async editForm(@Param('id') id: string) {
     const room = await this.roomsService.findOne(id);
@@ -51,12 +61,16 @@ export class RoomsController {
   }
 
   @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/rooms')
   async update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
     await this.roomsService.update(id, updateRoomDto);
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/rooms')
   async remove(@Param('id') id: string) {
     await this.roomsService.remove(id);

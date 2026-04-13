@@ -5,6 +5,10 @@
 <p>Цена: <%= room.pricePerNight %> руб.</p>
 <p>Вместимость: <%= room.capacity %> чел.</p>
 <p>Описание: <%= room.description || 'нет' %></p>
-<a href="/rooms">Назад</a>
+<a href="/rooms/<%= room.id %>/edit">Редактировать</a>
+<form action="/rooms/<%= room.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Удалить номер?')">
+  <button type="submit">Удалить</button>
+</form>
+<a href="/rooms">Назад к списку</a>
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>

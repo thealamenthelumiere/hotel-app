@@ -33,7 +33,7 @@ export class UsersService {
       email,
       passwordHash: hashedPassword,
       name: name || email.split('@')[0],
-      role: UserRole.USER,
+      role: UserRole.GUEST,
     });
 
     return this.usersRepository.save(user);

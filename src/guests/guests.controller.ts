@@ -8,11 +8,16 @@ import {
   Delete,
   Render,
   Redirect,
-  Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { GuestsService } from './guests.service';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { UpdateGuestDto } from './dto/update-guest.dto';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('guests')
 export class GuestsController {
@@ -20,22 +25,28 @@ export class GuestsController {
 
   @Get()
   @Render('guests/index')
-  async index(@Query('auth') auth: string) {
+  async index(@Req() req: Request) {
     const guests = await this.guestsService.findAll();
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return { guests, isAuthenticated, user };
-    //console.log('Guests count:', guests.length);
-    //return { guests };
+    const session = req.session as { userId?: string; userRole?: string; userName?: string };
+    return {
+      guests,
+      isAuthenticated: !!session.userId,
+      isAdmin: session.userRole === UserRole.ADMIN,
+      user: session.userName || null,
+    };
   }
 
   @Get('add')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Render('guests/add')
   addForm() {
     return {};
   }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/guests')
   async create(@Body() createGuestDto: CreateGuestDto) {
     await this.guestsService.create(createGuestDto);
@@ -49,6 +60,8 @@ export class GuestsController {
   }
 
   @Get(':id/edit')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Render('guests/edit')
   async editForm(@Param('id') id: string) {
     const guest = await this.guestsService.findOne(id);
@@ -56,15 +69,16 @@ export class GuestsController {
   }
 
   @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/guests')
-  async update(
-    @Param('id') id: string,
-    @Body() updateGuestDto: UpdateGuestDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateGuestDto: UpdateGuestDto) {
     await this.guestsService.update(id, updateGuestDto);
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/guests')
   async remove(@Param('id') id: string) {
     await this.guestsService.remove(id);

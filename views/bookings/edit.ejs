@@ -1,7 +1,7 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Редактировать бронирование</h1>
-<form action="/bookings/<%= booking.id %>/update" method="post">
+<form action="/bookings/<%= booking.id %>?_method=PUT" method="post">
   <label>Гость:
     <select name="guestId">
       <% guests.forEach(g => { %>
@@ -9,7 +9,29 @@
       <% }) %>
     </select>
   </label>
-  <!-- остальные поля аналогично add, но с атрибутом value или selected -->
+  <label>Номер:
+    <select name="roomId">
+      <% rooms.forEach(r => { %>
+        <option value="<%= r.id %>" <%= (booking.room && booking.room.id === r.id) ? 'selected' : '' %>>Номер <%= r.number %> (<%= r.type %>)</option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Дата заезда: <input type="date" name="checkInDate" value="<%= new Date(booking.checkInDate).toISOString().split('T')[0] %>" required></label>
+  <label>Дата выезда: <input type="date" name="checkOutDate" value="<%= new Date(booking.checkOutDate).toISOString().split('T')[0] %>" required></label>
+  <label>Статус:
+    <select name="status">
+      <% ['pending','confirmed','cancelled','completed'].forEach(s => { %>
+        <option value="<%= s %>" <%= booking.status === s ? 'selected' : '' %>><%= s %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Услуги:
+    <select name="serviceIds" multiple>
+      <% services.forEach(s => { %>
+        <option value="<%= s.id %>" <%= (booking.services && booking.services.some(bs => bs.id === s.id)) ? 'selected' : '' %>><%= s.name %></option>
+      <% }) %>
+    </select>
+  </label>
   <button type="submit">Сохранить</button>
 </form>
 <%- include('../partials/footer') %>

@@ -19,7 +19,7 @@
         <td>
           <a href="/bookings/<%= booking.id %>">Просмотр</a>
           <a href="/bookings/<%= booking.id %>/edit">Ред.</a>
-          <form action="/bookings/<%= booking.id %>/delete" method="post" style="display:inline;" onsubmit="return confirm('Удалить?')">
+          <form action="/bookings/<%= booking.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Удалить?')">
             <button type="submit">Удалить</button>
           </form>
         </td>
@@ -29,3 +29,26 @@
 </table>
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>
+
+<div id="toast" style="display:none; position:fixed; bottom:24px; right:24px; background:#323232; color:#fff; padding:14px 20px; border-radius:8px; font-size:14px; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
+
+<script>
+  const toast = document.getElementById('toast');
+  let toastTimer;
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }
+
+  const eventSource = new EventSource('/bookings/sse');
+  eventSource.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    showToast(data.message);
+  };
+  eventSource.onerror = function() {
+    eventSource.close();
+  };
+</script>

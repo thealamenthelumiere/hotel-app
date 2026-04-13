@@ -7,6 +7,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { PaymentsModule } from './payments/payments.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { ServicesModule } from './services/services.module';
+import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -21,6 +22,7 @@ import { AppService } from './app.service';
     PaymentsModule,
     RoomsModule,
     ServicesModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

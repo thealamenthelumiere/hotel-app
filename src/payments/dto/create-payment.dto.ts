@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsPositive,
-  IsEnum,
-  IsOptional,
-  IsDateString,
-} from 'class-validator';
+import { IsUUID, IsNumber, IsPositive, IsEnum, IsOptional, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum PaymentMethod {
   CASH = 'cash',
@@ -14,13 +9,13 @@ export enum PaymentMethod {
 }
 
 export class CreatePaymentDto {
-  @ApiProperty({ example: 1, description: 'ID бронирования' })
-  @IsInt()
-  @IsPositive()
-  bookingId: number;
+  @ApiProperty({ example: 'uuid-бронирования', description: 'ID бронирования (UUID)' })
+  @IsUUID()
+  bookingId: string;
 
   @ApiProperty({ example: 15000, description: 'Сумма платежа' })
-  @IsInt()
+  @Type(() => Number)
+  @IsNumber()
   @IsPositive()
   amount: number;
 

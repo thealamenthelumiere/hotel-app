@@ -6,7 +6,7 @@
   <% guests.forEach(guest => { %>
     <li>
       <a href="/guests/<%= guest.id %>"><%= guest.name %></a> (<%= guest.email %>)
-      <form action="/guests/<%= guest.id %>/delete" method="post" style="display:inline;" onsubmit="return confirm('Удалить гостя?')">
+      <form action="/guests/<%= guest.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Удалить гостя?')">
         <button type="submit">Удалить</button>
       </form>
       <a href="/guests/<%= guest.id %>/edit">Редактировать</a>

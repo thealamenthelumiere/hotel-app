@@ -6,7 +6,7 @@
   <% rooms.forEach(room => { %>
     <li>
       <a href="/rooms/<%= room.id %>">Номер <%= room.number %></a> – <%= room.type %>, <%= room.pricePerNight %> руб.
-      <form action="/rooms/<%= room.id %>/delete" method="post" style="display:inline;" onsubmit="return confirm('Удалить номер?')">
+      <form action="/rooms/<%= room.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Удалить номер?')">
         <button type="submit">Удалить</button>
       </form>
       <a href="/rooms/<%= room.id %>/edit">Редактировать</a>

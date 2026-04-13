@@ -1,29 +1,41 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { VersioningType } from '@nestjs/common';
+import { join } from 'path';
+import * as session from 'express-session';
+import * as methodOverride from 'method-override';
 import { AppModule } from './app.module';
-//import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // 1. Включение версионирования (если нужно)
-  app.enableVersioning({
-    type: VersioningType.URI, // или Header, MediaType
-    defaultVersion: '1', // строка или символ (не unique symbol)
-  });
+  // Статические файлы и шаблоны
+  app.useStaticAssets(join(__dirname, '..', 'src', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
 
-  // 2. Настройка Swagger
+  // Сессии
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || 'hotel-secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    }),
+  );
+
+  // Method override: позволяет формам отправлять PUT и DELETE через POST + ?_method=PUT
+  app.use(methodOverride('_method'));
+
+  // Swagger
   const config = new DocumentBuilder()
     .setTitle('Hotel API')
     .setDescription('API documentation')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document); // setup возвращает void
+  SwaggerModule.setup('api/docs', app, document);
 
-  // 3. Запуск сервера
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Сервер запущен на http://localhost:${port}`);

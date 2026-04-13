@@ -8,10 +8,11 @@ import {
   Delete,
   Render,
   Redirect,
-  Query,
+  UseGuards,
+  Req,
   Sse,
 } from '@nestjs/common';
-//import { Observable } from 'rxjs';
+import { Request } from 'express';
 import { map } from 'rxjs/operators';
 import { BookingsService } from './bookings.service';
 import { GuestsService } from '../guests/guests.service';
@@ -19,6 +20,9 @@ import { RoomsService } from '../rooms/rooms.service';
 import { ServicesService } from '../services/services.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('bookings')
 export class BookingsController {
@@ -29,30 +33,41 @@ export class BookingsController {
     private readonly servicesService: ServicesService,
   ) {}
 
-  // Статические маршруты – без параметров
   @Get()
   @Render('bookings/index')
-  async index(@Query('auth') auth: string) {
+  async index(@Req() req: Request) {
     const bookings = await this.bookingsService.findAll();
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return { bookings, isAuthenticated, user };
+    const session = req.session as { userId?: string; userRole?: string; userName?: string };
+    return {
+      bookings,
+      isAuthenticated: !!session.userId,
+      isAdmin: session.userRole === UserRole.ADMIN,
+      user: session.userName || null,
+    };
   }
 
   @Get('add')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.GUEST)
   @Render('bookings/add')
-  async addForm(@Query('auth') auth: string) {
+  async addForm(@Req() req: Request) {
     const [guests, rooms, services] = await Promise.all([
       this.guestsService.findAll(),
       this.roomsService.findAll(),
       this.servicesService.findAll(),
     ]);
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return { guests, rooms, services, isAuthenticated, user };
+    const session = req.session as { userId?: string; userRole?: string; userName?: string };
+    return {
+      guests,
+      rooms,
+      services,
+      isAuthenticated: !!session.userId,
+      isAdmin: session.userRole === UserRole.ADMIN,
+      user: session.userName || null,
+    };
   }
 
-  // SSE должен быть до динамических маршрутов с параметрами
+  // SSE — должен быть до маршрутов с параметрами
   @Sse('sse')
   sse() {
     return this.bookingsService.bookingCreated$.pipe(
@@ -65,46 +80,61 @@ export class BookingsController {
     );
   }
 
-  // Динамические маршруты
   @Get(':id')
   @Render('bookings/show')
-  async show(@Param('id') id: string, @Query('auth') auth: string) {
+  async show(@Param('id') id: string, @Req() req: Request) {
     const booking = await this.bookingsService.findOne(id);
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return { booking, isAuthenticated, user };
+    const session = req.session as { userId?: string; userRole?: string; userName?: string };
+    return {
+      booking,
+      isAuthenticated: !!session.userId,
+      isAdmin: session.userRole === UserRole.ADMIN,
+      user: session.userName || null,
+    };
   }
 
   @Get(':id/edit')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Render('bookings/edit')
-  async editForm(@Param('id') id: string, @Query('auth') auth: string) {
+  async editForm(@Param('id') id: string, @Req() req: Request) {
     const [booking, guests, rooms, services] = await Promise.all([
       this.bookingsService.findOne(id),
       this.guestsService.findAll(),
       this.roomsService.findAll(),
       this.servicesService.findAll(),
     ]);
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return { booking, guests, rooms, services, isAuthenticated, user };
+    const session = req.session as { userId?: string; userRole?: string; userName?: string };
+    return {
+      booking,
+      guests,
+      rooms,
+      services,
+      isAuthenticated: !!session.userId,
+      isAdmin: session.userRole === UserRole.ADMIN,
+      user: session.userName || null,
+    };
   }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.GUEST)
   @Redirect('/bookings')
   async create(@Body() createBookingDto: CreateBookingDto) {
     await this.bookingsService.create(createBookingDto);
   }
 
   @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/bookings')
-  async update(
-    @Param('id') id: string,
-    @Body() updateBookingDto: UpdateBookingDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
     await this.bookingsService.update(id, updateBookingDto);
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Redirect('/bookings')
   async remove(@Param('id') id: string) {
     await this.bookingsService.remove(id);
