@@ -1,14 +1,13 @@
-import { Controller, Get, Redirect } from '@nestjs/common';
+import { Controller, Get, Render, Query } from '@nestjs/common';
 
 @Controller()
 export class AppController {
   @Get()
-  @Redirect('/guests', 302)
   root() {
     // пусто
   }
-  /*@Get()
-  @Render('index')    Render, Query
+  @Get()
+  @Render('index')
   getIndex(@Query('auth') auth: string) {
     // Если auth=1, считаем пользователя авторизованным
     const isAuthenticated = auth === '1';
@@ -105,6 +104,4 @@ export class AppController {
       title: 'Отзывы - Талион Империал',
     };
   }
-}
-*/
 }

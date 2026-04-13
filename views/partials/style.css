@@ -51,7 +51,7 @@ body {
 .video_slide {
     position: relative;
 }
-.background-video {
+/*.background-video {
      position: static;
      top: 50%;
      left: 50%;
@@ -59,7 +59,65 @@ body {
      min-height: 100%;
      width: "1920";
      height: "1024";
-     z-index: -1; /* Помещаем видео за контентом */
+     z-index: -1; /* Помещаем видео за контентом 
+}*/
+/* Обёртка для видео-фона */
+/* Секция Hero */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Обёртка видео */
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+/* Само видео */
+.video-background video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+/* Контент поверх видео */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: white;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4); /* Полупрозрачная подложка для читаемости */
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-content h2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
 }
 .content {
      position: relative;
@@ -262,9 +320,10 @@ section {
 .section__video {
     width: 100%;
     height: 100%;
-    object-fit: contain !important;
+    object-fit: cover;
     object-position: center;
 }
+
 
 /* Галерея */
 .gallery-grid {

@@ -1,11 +1,12 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Список номеров</h1>
 <a href="/rooms/add">Добавить номер</a>
 <ul>
   <% rooms.forEach(room => { %>
     <li>
-      <a href="/rooms/<%= room.id %>">Номер <%= room.number %></a> (<%= room.type %>) - <%= room.pricePerNight %> руб./ночь
-      <form action="/rooms/<%= room.id %>?_method=DELETE" method="post" style="display:inline;">
+      <a href="/rooms/<%= room.id %>">Номер <%= room.number %></a> – <%= room.type %>, <%= room.pricePerNight %> руб.
+      <form action="/rooms/<%= room.id %>/delete" method="post" style="display:inline;" onsubmit="return confirm('Удалить номер?')">
         <button type="submit">Удалить</button>
       </form>
       <a href="/rooms/<%= room.id %>/edit">Редактировать</a>
@@ -13,3 +14,4 @@
   <% }) %>
 </ul>
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

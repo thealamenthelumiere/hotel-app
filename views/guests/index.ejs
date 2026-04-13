@@ -1,3 +1,4 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Список гостей</h1>
 <a href="/guests/add">Добавить гостя</a>
@@ -5,7 +6,7 @@
   <% guests.forEach(guest => { %>
     <li>
       <a href="/guests/<%= guest.id %>"><%= guest.name %></a> (<%= guest.email %>)
-      <form action="/guests/<%= guest.id %>?_method=DELETE" method="post" style="display:inline;">
+      <form action="/guests/<%= guest.id %>/delete" method="post" style="display:inline;" onsubmit="return confirm('Удалить гостя?')">
         <button type="submit">Удалить</button>
       </form>
       <a href="/guests/<%= guest.id %>/edit">Редактировать</a>
@@ -13,3 +14,4 @@
   <% }) %>
 </ul>
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

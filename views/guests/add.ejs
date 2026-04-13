@@ -1,18 +1,11 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Добавить гостя</h1>
 <form action="/guests" method="post">
-  <div>
-    <label>Имя:</label>
-    <input type="text" name="name" required>
-  </div>
-  <div>
-    <label>Email:</label>
-    <input type="email" name="email" required>
-  </div>
-  <div>
-    <label>Телефон:</label>
-    <input type="text" name="phone">
-  </div>
+  <label>Имя: <input type="text" name="name" required></label>
+  <label>Email: <input type="email" name="email" required></label>
+  <label>Телефон: <input type="text" name="phone"></label>
   <button type="submit">Создать</button>
 </form>
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

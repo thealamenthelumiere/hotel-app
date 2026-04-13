@@ -1,8 +1,10 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Номер <%= room.number %></h1>
 <p>Тип: <%= room.type %></p>
-<p>Цена за ночь: <%= room.pricePerNight %> руб.</p>
+<p>Цена: <%= room.pricePerNight %> руб.</p>
 <p>Вместимость: <%= room.capacity %> чел.</p>
 <p>Описание: <%= room.description || 'нет' %></p>
-<a href="/rooms">Назад к списку</a>
+<a href="/rooms">Назад</a>
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

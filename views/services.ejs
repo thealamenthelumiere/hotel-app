@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<%- include('partials/head') %>
-<title><%= title || 'Услуги - Талион Империал' %></title>
+  <%- include('partials/head') %>
+  <title>Услуги - Талион Империал</title>
 </head>
 <body>
-<%- include('partials/header') %>
-
-<main>
-    <section id="services">
+  <%- include('partials/header') %>
+  <main>
     <div class="container">
-        <h2>Услуги</h2>
-        <p>Предоставляемые услуги: спа, ресторан, бассейн и другие...</p>
-        
+      <h2>Услуги</h2>
+      <ul>
+        <li>Спа-процедуры</li>
+        <li>Ресторан</li>
+        <li>Бассейн</li>
+      </ul>
     </div>
-    </section>
-</main>
-
-<%- include('partials/footer') %>
-<%- include('partials/modal') %>
-<%- include('partials/scripts') %>
+  </main>
+  <%- include('partials/footer') %>
+  <%- include('partials/modal') %>
+  <%- include('partials/scripts') %>
 </body>
 </html>

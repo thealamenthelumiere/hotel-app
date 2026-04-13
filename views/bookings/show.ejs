@@ -1,32 +1,21 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
 <h1>Детали бронирования</h1>
-
 <p><strong>ID:</strong> <%= booking.id %></p>
-<p><strong>Гость:</strong> <%= booking.guest?.name %> (<%= booking.guest?.email %>)</p>
-<p><strong>Номер:</strong> №<%= booking.room?.number %> (<%= booking.room?.type %>) – <%= booking.room?.pricePerNight %> руб./ночь</p>
-<p><strong>Дата заезда:</strong> <%= new Date(booking.checkInDate).toLocaleDateString() %></p>
-<p><strong>Дата выезда:</strong> <%= new Date(booking.checkOutDate).toLocaleDateString() %></p>
+<p><strong>Гость:</strong> <%= booking.guest ? booking.guest.name : '' %> (<%= booking.guest ? booking.guest.email : '' %>)</p>
+<p><strong>Номер:</strong> №<%= booking.room ? booking.room.number : '' %>, тип: <%= booking.room ? booking.room.type : '' %></p>
+<p><strong>Заезд:</strong> <%= new Date(booking.checkInDate).toLocaleDateString() %></p>
+<p><strong>Выезд:</strong> <%= new Date(booking.checkOutDate).toLocaleDateString() %></p>
 <p><strong>Статус:</strong> <%= booking.status %></p>
-<p><strong>Общая стоимость:</strong> <%= booking.totalPrice %> руб.</p>
-
-<% if (booking.services && booking.services.length > 0) { %>
-  <h3>Дополнительные услуги:</h3>
+<p><strong>Сумма:</strong> <%= booking.totalPrice %> руб.</p>
+<% if (booking.services && booking.services.length) { %>
+  <h3>Услуги:</h3>
   <ul>
-    <% booking.services.forEach(service => { %>
-      <li><%= service.name %> – <%= service.price %> руб.</li>
+    <% booking.services.forEach(s => { %>
+      <li><%= s.name %> – <%= s.price %> руб.</li>
     <% }) %>
   </ul>
 <% } %>
-
-<% if (booking.payment) { %>
-  <h3>Платёж:</h3>
-  <p>Сумма: <%= booking.payment.amount %>, способ: <%= booking.payment.method %>, статус: <%= booking.payment.status %></p>
-<% } %>
-
-<a href="/bookings">Назад к списку</a>
-<a href="/bookings/<%= booking.id %>/edit">Редактировать</a>
-<form action="/bookings/<%= booking.id %>?_method=DELETE" method="post" style="display:inline;">
-  <button type="submit">Удалить</button>
-</form>
-
+<a href="/bookings">Назад</a>
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

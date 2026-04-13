@@ -1,19 +1,5 @@
 <footer>
-    <div class="container">
-    <div class="ad-banner">
-    <p>Рекламный баннер</p>
-    </div>
-    <p>© 2023 Талион Империал. Все права защищены.</p>
-    </div>
-    <script>
-  const eventSource = new EventSource('/bookings/sse');
-  const notyf = new Notyf();
-  eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    notyf.success(data.message);
-  };
-  eventSource.onerror = (err) => {
-    console.error('SSE error', err);
-  };
-</script>
+  <div class="container">
+    <p>© 2025 Талион Империал. Все права защищены.</p>
+  </div>
 </footer>

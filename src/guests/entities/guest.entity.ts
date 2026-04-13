@@ -1,5 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Booking } from '../../bookings/entities/booking.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('guests')
 export class Guest {
@@ -17,4 +25,11 @@ export class Guest {
 
   @OneToMany(() => Booking, (booking) => booking.guest)
   bookings: Booking[];
+
+  @OneToOne(() => User, (user) => user.guest)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column({ nullable: true })
+  userId: string; // внешний ключ на users.id
 }

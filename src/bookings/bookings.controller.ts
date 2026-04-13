@@ -1,5 +1,17 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Render, Redirect, Query, Sse } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Render,
+  Redirect,
+  Query,
+  Sse,
+} from '@nestjs/common';
+//import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BookingsService } from './bookings.service';
 import { GuestsService } from '../guests/guests.service';
@@ -85,7 +97,10 @@ export class BookingsController {
 
   @Put(':id')
   @Redirect('/bookings')
-  async update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateBookingDto: UpdateBookingDto,
+  ) {
     await this.bookingsService.update(id, updateBookingDto);
   }
 

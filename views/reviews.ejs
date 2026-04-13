@@ -1,39 +1,28 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<%- include('partials/head') %>
-<title><%= title || 'Отзывы - Талион Империал' %></title>
+  <%- include('partials/head') %>
+  <title>Отзывы - Талион Империал</title>
 </head>
 <body>
-<%- include('partials/header') %>
-
-<main>
+  <%- include('partials/header') %>
+  <main>
     <div class="container">
-    <h2>Отзывы наших гостей</h2>
-    <div id="reviews-container">
-        <div id="preloader" class="preloader">
-        Загрузка отзывов...
-        </div>
+      <h2>Отзывы гостей</h2>
+      <div id="reviews-list"></div>
+      <button id="load-reviews">Загрузить отзывы</button>
+      <h3>Оставить отзыв</h3>
+      <form id="review-form">
+        <input type="text" name="name" placeholder="Ваше имя" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <textarea name="text" placeholder="Ваш отзыв" required></textarea>
+        <button type="submit">Отправить</button>
+      </form>
     </div>
-    <button id="load-reviews" class="button">Загрузить отзывы</button>
-
-    <section id="add-review">
-        <h2>Оставить отзыв</h2>
-        <form id="add-review-form" class="review-form">
-        <input type="text" id="new-review-name-input" placeholder="Ваше имя" required>
-        <input type="email" id="new-review-email-input" placeholder="Ваш email" required>
-        <textarea id="new-review-body-input" placeholder="Ваш отзыв" required></textarea>
-        <button type="submit" class="button">Отправить отзыв</button>
-        </form>
-    </section>
-    </div>
-</main>
-
-<%- include('partials/footer') %>
-<%- include('partials/modal') %>
-<%- include('partials/scripts') %>
-
-<!-- Подключаем скрипт для работы с отзывами -->
-<script src="./src/public/reviews.js" defer></script>
+  </main>
+  <%- include('partials/footer') %>
+  <%- include('partials/modal') %>
+  <%- include('partials/scripts') %>
+  <script src="/js/reviews.js" defer></script>
 </body>
 </html>
