@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { join } from 'path';
-import * as session from 'express-session';
-import * as methodOverride from 'method-override';
+import session = require('express-session');
+import methodOverride = require('method-override');
 import { AppModule } from './app.module';
 
 async function bootstrap() {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID, IsNumber, IsPositive, IsEnum, IsOptional, IsDateString } from 'class-validator';
+import { IsUUID, IsNumber, IsPositive, IsEnum, IsOptional, IsDateString, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum PaymentMethod {
@@ -35,4 +35,13 @@ export class CreatePaymentDto {
   @IsOptional()
   @IsDateString()
   paymentDate?: string;
+
+  @ApiProperty({
+    example: 'pending',
+    description: 'Статус платежа: pending, paid, refunded',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
