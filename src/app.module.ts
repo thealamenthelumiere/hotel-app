@@ -10,7 +10,6 @@ import {
   getComplexity,
   simpleEstimator,
 } from 'graphql-query-complexity';
-import { join } from 'path';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { GuestsModule } from './guests/guests.module';
 import { BookingsModule } from './bookings/bookings.module';
@@ -31,7 +30,7 @@ const MAX_COMPLEXITY = 50;
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: true,
       sortSchema: true,
       playground: false,
       introspection: true,
