@@ -3,10 +3,6 @@ import { Controller, Get, Render, Query } from '@nestjs/common';
 @Controller()
 export class AppController {
   @Get()
-  root() {
-    // пусто
-  }
-  @Get()
   @Render('index')
   getIndex(@Query('auth') auth: string) {
     // Если auth=1, считаем пользователя авторизованным
