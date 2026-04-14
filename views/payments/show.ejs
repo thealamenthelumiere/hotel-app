@@ -1,0 +1,28 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Платёж</h1>
+      <a href="/payments" class="btn btn--outline">← Назад</a>
+    </div>
+    <div class="form-card">
+      <p><strong>ID:</strong> <%= payment.id %></p>
+      <p><strong>Бронирование:</strong> <%= payment.booking ? payment.booking.id.substring(0,8) + '…' : '—' %></p>
+      <p><strong>Сумма:</strong> <%= payment.amount %> ₽</p>
+      <p><strong>Способ оплаты:</strong> <%= payment.method %></p>
+      <p><strong>Статус:</strong> <span class="badge badge--<%= payment.status %>"><%= payment.status %></span></p>
+      <p><strong>Дата:</strong> <%= new Date(payment.paymentDate).toLocaleDateString('ru-RU') %></p>
+      <div class="form-actions">
+        <a href="/payments/<%= payment.id %>/edit" class="btn btn--primary">Редактировать</a>
+        <form action="/payments/<%= payment.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить платёж?')">
+          <button type="submit" class="btn btn--danger">Удалить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

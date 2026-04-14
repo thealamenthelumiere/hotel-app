@@ -9,7 +9,9 @@ import {
   Render,
   Redirect,
   UseGuards,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
@@ -17,23 +19,32 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
+function sessionLocals(req: Request) {
+  const session = req.session as { userId?: string; userRole?: string; userName?: string };
+  return {
+    isAuthenticated: !!session.userId,
+    isAdmin: session.userRole === UserRole.ADMIN,
+    user: session.userName || null,
+  };
+}
+
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   @Get()
   @Render('rooms/index')
-  async index() {
+  async index(@Req() req: Request) {
     const rooms = await this.roomsService.findAll();
-    return { rooms };
+    return { rooms, ...sessionLocals(req) };
   }
 
   @Get('add')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Render('rooms/add')
-  addForm() {
-    return {};
+  addForm(@Req() req: Request) {
+    return { ...sessionLocals(req) };
   }
 
   @Post()
@@ -46,18 +57,18 @@ export class RoomsController {
 
   @Get(':id')
   @Render('rooms/show')
-  async show(@Param('id') id: string) {
+  async show(@Param('id') id: string, @Req() req: Request) {
     const room = await this.roomsService.findOne(id);
-    return { room };
+    return { room, ...sessionLocals(req) };
   }
 
   @Get(':id/edit')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Render('rooms/edit')
-  async editForm(@Param('id') id: string) {
+  async editForm(@Param('id') id: string, @Req() req: Request) {
     const room = await this.roomsService.findOne(id);
-    return { room };
+    return { room, ...sessionLocals(req) };
   }
 
   @Put(':id')

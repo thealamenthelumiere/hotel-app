@@ -1,0 +1,46 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Платежи</h1>
+      <a href="/payments/add" class="btn btn--primary">+ Добавить</a>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Бронирование</th><th>Сумма</th><th>Способ</th><th>Статус</th><th>Дата</th><th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (payments && payments.length) { %>
+          <% payments.forEach(p => { %>
+            <tr>
+              <td><%= String(p.id).substring(0,8) %>…</td>
+              <td><%= p.booking ? p.booking.id.substring(0,8) + '…' : '—' %></td>
+              <td><%= p.amount %> ₽</td>
+              <td><%= p.method %></td>
+              <td><span class="badge badge--<%= p.status %>"><%= p.status %></span></td>
+              <td><%= new Date(p.paymentDate).toLocaleDateString('ru-RU') %></td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <a href="/payments/<%= p.id %>" class="btn btn--outline btn--sm">Просмотр</a>
+                  <a href="/payments/<%= p.id %>/edit" class="btn btn--outline btn--sm">Ред.</a>
+                  <form action="/payments/<%= p.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить платёж?')">
+                    <button type="submit" class="btn btn--danger btn--sm">Удалить</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="7" style="text-align:center;padding:24px;">Платежи не найдены</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

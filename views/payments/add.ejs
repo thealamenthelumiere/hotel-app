@@ -1,37 +1,53 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1>Добавить платёж</h1>
-<form action="/payments" method="post">
-  <div>
-    <label>Бронирование:</label>
-    <select name="bookingId" required>
-      <option value="">Выберите бронирование</option>
-      <% bookings.forEach(booking => { %>
-        <option value="<%= booking.id %>">
-          Бронь #<%= booking.id.substring(0,8) %> (Гость: <%= booking.guest.name %>)
-        </option>
-      <% }) %>
-    </select>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Добавить платёж</h1>
+      <a href="/payments" class="btn btn--outline">← Назад</a>
+    </div>
+    <div class="form-card">
+      <form action="/payments" method="post">
+        <div class="form-group">
+          <label>Бронирование</label>
+          <select name="bookingId" required>
+            <option value="">— Выберите бронирование —</option>
+            <% bookings.forEach(b => { %>
+              <option value="<%= b.id %>">
+                #<%= b.id.substring(0,8) %> — <%= b.guest ? b.guest.name : '?' %>, <%= new Date(b.checkInDate).toLocaleDateString('ru-RU') %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Сумма (руб.)</label>
+          <input type="number" step="0.01" name="amount" required placeholder="5000">
+        </div>
+        <div class="form-group">
+          <label>Способ оплаты</label>
+          <select name="method" required>
+            <option value="cash">Наличные</option>
+            <option value="card">Карта</option>
+            <option value="online">Онлайн</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Статус</label>
+          <select name="status">
+            <option value="pending">Ожидает</option>
+            <option value="paid">Оплачено</option>
+            <option value="refunded">Возврат</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Создать</button>
+          <a href="/payments" class="btn btn--outline">Отмена</a>
+        </div>
+      </form>
+    </div>
   </div>
-  <div>
-    <label>Сумма:</label>
-    <input type="number" step="0.01" name="amount" required>
-  </div>
-  <div>
-    <label>Способ оплаты:</label>
-    <select name="method" required>
-      <option value="cash">Наличные</option>
-      <option value="card">Карта</option>
-      <option value="transfer">Перевод</option>
-    </select>
-  </div>
-  <div>
-    <label>Статус:</label>
-    <select name="status">
-      <option value="pending">Ожидает</option>
-      <option value="paid">Оплачено</option>
-      <option value="refunded">Возврат</option>
-    </select>
-  </div>
-  <button type="submit">Создать</button>
-</form>
+</main>
+
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

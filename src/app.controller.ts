@@ -38,16 +38,6 @@ export class AppController {
     return { ...sessionLocals(req), title: 'Контакты - Талион Империал' };
   }
 
-  @Get('rooms')
-  @Render('rooms')
-  getRooms(@Req() req: Request) {
-    const rooms = [
-      { title: 'Стандарт', description: 'Уютный номер с современным дизайном и всеми удобствами.' },
-      { title: 'Люкс', description: 'Просторный номер с гостиной зоной и панорамным видом.' },
-    ];
-    return { ...sessionLocals(req), title: 'Номера - Талион Империал', rooms };
-  }
-
   @Get('constructor')
   @Render('constructor')
   getConstructor(@Req() req: Request) {

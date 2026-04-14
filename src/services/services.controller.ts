@@ -9,7 +9,9 @@ import {
   Render,
   Redirect,
   UseGuards,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { ServicesService } from './services.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
@@ -17,23 +19,32 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
+function sessionLocals(req: Request) {
+  const session = req.session as { userId?: string; userRole?: string; userName?: string };
+  return {
+    isAuthenticated: !!session.userId,
+    isAdmin: session.userRole === UserRole.ADMIN,
+    user: session.userName || null,
+  };
+}
+
 @Controller('services')
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
   @Get()
   @Render('services/index')
-  async index() {
+  async index(@Req() req: Request) {
     const services = await this.servicesService.findAll();
-    return { services };
+    return { services, ...sessionLocals(req) };
   }
 
   @Get('add')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Render('services/add')
-  addForm() {
-    return {};
+  addForm(@Req() req: Request) {
+    return { ...sessionLocals(req) };
   }
 
   @Post()
@@ -46,18 +57,18 @@ export class ServicesController {
 
   @Get(':id')
   @Render('services/show')
-  async show(@Param('id') id: string) {
+  async show(@Param('id') id: string, @Req() req: Request) {
     const service = await this.servicesService.findOne(id);
-    return { service };
+    return { service, ...sessionLocals(req) };
   }
 
   @Get(':id/edit')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Render('services/edit')
-  async editForm(@Param('id') id: string) {
+  async editForm(@Param('id') id: string, @Req() req: Request) {
     const service = await this.servicesService.findOne(id);
-    return { service };
+    return { service, ...sessionLocals(req) };
   }
 
   @Put(':id')
