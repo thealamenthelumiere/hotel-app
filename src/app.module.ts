@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { GraphQLError } from 'graphql';
 import {
   fieldExtensionsEstimator,
@@ -39,6 +40,7 @@ const MAX_COMPLEXITY = 50;
         numberScalarMode: 'integer',
       },
       plugins: [
+        ApolloServerPluginLandingPageLocalDefault({ embed: true }),
         {
           // Проверка сложности запроса перед выполнением
           async requestDidStart() {
