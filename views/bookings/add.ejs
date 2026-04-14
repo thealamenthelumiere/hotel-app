@@ -33,7 +33,9 @@
           <select name="roomId" required>
             <option value="">— Выберите номер —</option>
             <% rooms.forEach(r => { %>
-              <option value="<%= r.id %>">№<%= r.number %> — <%= r.type %>, <%= r.pricePerNight %> руб/ночь</option>
+              <option value="<%= r.id %>" <%= locals.preselectedRoomId === r.id ? 'selected' : '' %>>
+                №<%= r.number %> — <%= r.type %>, <%= r.pricePerNight %> руб/ночь
+              </option>
             <% }) %>
           </select>
         </div>

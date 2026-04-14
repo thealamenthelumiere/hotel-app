@@ -63,6 +63,7 @@ export class BookingsController {
   async addForm(@Req() req: Request) {
     const s = req.session as SessionData;
     const isAdmin = s.userRole === UserRole.ADMIN;
+    const preselectedRoomId = (req.query.roomId as string) || null;
     const [rooms, services] = await Promise.all([
       this.roomsService.findAll(),
       this.servicesService.findAll(),
@@ -70,7 +71,7 @@ export class BookingsController {
 
     if (isAdmin) {
       const guests = await this.guestsService.findAll();
-      return { guests, currentGuest: null, rooms, services, ...sessionLocals(req) };
+      return { guests, currentGuest: null, rooms, services, preselectedRoomId, ...sessionLocals(req) };
     }
 
     // Для гостя — найти или создать профиль гостя по userId
@@ -79,7 +80,7 @@ export class BookingsController {
       s.userName || 'Гость',
       s.userEmail || '',
     );
-    return { guests: [], currentGuest, rooms, services, ...sessionLocals(req) };
+    return { guests: [], currentGuest, rooms, services, preselectedRoomId, ...sessionLocals(req) };
   }
 
   // SSE — должен быть до маршрутов с параметрами
