@@ -24,6 +24,22 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
+type SessionData = {
+  userId?: string;
+  userRole?: string;
+  userName?: string;
+  userEmail?: string;
+};
+
+function sessionLocals(req: Request) {
+  const s = req.session as SessionData;
+  return {
+    isAuthenticated: !!s.userId,
+    isAdmin: s.userRole === UserRole.ADMIN,
+    user: s.userName || null,
+  };
+}
+
 @Controller('bookings')
 export class BookingsController {
   constructor(
@@ -37,13 +53,7 @@ export class BookingsController {
   @Render('bookings/index')
   async index(@Req() req: Request) {
     const bookings = await this.bookingsService.findAll();
-    const session = req.session as { userId?: string; userRole?: string; userName?: string };
-    return {
-      bookings,
-      isAuthenticated: !!session.userId,
-      isAdmin: session.userRole === UserRole.ADMIN,
-      user: session.userName || null,
-    };
+    return { bookings, ...sessionLocals(req) };
   }
 
   @Get('add')
@@ -51,20 +61,25 @@ export class BookingsController {
   @Roles(UserRole.ADMIN, UserRole.GUEST)
   @Render('bookings/add')
   async addForm(@Req() req: Request) {
-    const [guests, rooms, services] = await Promise.all([
-      this.guestsService.findAll(),
+    const s = req.session as SessionData;
+    const isAdmin = s.userRole === UserRole.ADMIN;
+    const [rooms, services] = await Promise.all([
       this.roomsService.findAll(),
       this.servicesService.findAll(),
     ]);
-    const session = req.session as { userId?: string; userRole?: string; userName?: string };
-    return {
-      guests,
-      rooms,
-      services,
-      isAuthenticated: !!session.userId,
-      isAdmin: session.userRole === UserRole.ADMIN,
-      user: session.userName || null,
-    };
+
+    if (isAdmin) {
+      const guests = await this.guestsService.findAll();
+      return { guests, currentGuest: null, rooms, services, ...sessionLocals(req) };
+    }
+
+    // Для гостя — найти или создать профиль гостя по userId
+    const currentGuest = await this.guestsService.findOrCreateByUser(
+      s.userId!,
+      s.userName || 'Гость',
+      s.userEmail || '',
+    );
+    return { guests: [], currentGuest, rooms, services, ...sessionLocals(req) };
   }
 
   // SSE — должен быть до маршрутов с параметрами
@@ -84,13 +99,7 @@ export class BookingsController {
   @Render('bookings/show')
   async show(@Param('id') id: string, @Req() req: Request) {
     const booking = await this.bookingsService.findOne(id);
-    const session = req.session as { userId?: string; userRole?: string; userName?: string };
-    return {
-      booking,
-      isAuthenticated: !!session.userId,
-      isAdmin: session.userRole === UserRole.ADMIN,
-      user: session.userName || null,
-    };
+    return { booking, ...sessionLocals(req) };
   }
 
   @Get(':id/edit')
@@ -104,24 +113,30 @@ export class BookingsController {
       this.roomsService.findAll(),
       this.servicesService.findAll(),
     ]);
-    const session = req.session as { userId?: string; userRole?: string; userName?: string };
-    return {
-      booking,
-      guests,
-      rooms,
-      services,
-      isAuthenticated: !!session.userId,
-      isAdmin: session.userRole === UserRole.ADMIN,
-      user: session.userName || null,
-    };
+    return { booking, guests, rooms, services, ...sessionLocals(req) };
   }
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.GUEST)
   @Redirect('/bookings')
-  async create(@Body() createBookingDto: CreateBookingDto) {
+  async create(@Body() createBookingDto: CreateBookingDto, @Req() req: Request) {
+    const s = req.session as SessionData;
+    if (s.userRole !== UserRole.ADMIN) {
+      // Гость всегда бронирует от своего профиля со статусом pending
+      const guest = await this.guestsService.findByUserId(s.userId!);
+      if (guest) createBookingDto.guestId = guest.id;
+      createBookingDto.status = 'pending';
+    }
     await this.bookingsService.create(createBookingDto);
+  }
+
+  @Post(':id/confirm')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Redirect('/bookings')
+  async confirm(@Param('id') id: string) {
+    await this.bookingsService.update(id, { status: 'confirmed' } as UpdateBookingDto);
   }
 
   @Put(':id')

@@ -27,9 +27,14 @@
               <td><span class="badge badge--<%= booking.status %>"><%= booking.status %></span></td>
               <td><%= booking.totalPrice %> ₽</td>
               <td>
-                <div style="display:flex;gap:6px;">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
                   <a href="/bookings/<%= booking.id %>" class="btn btn--outline btn--sm">Просмотр</a>
                   <% if (locals.isAdmin) { %>
+                    <% if (booking.status === 'pending') { %>
+                      <form action="/bookings/<%= booking.id %>/confirm" method="post">
+                        <button type="submit" class="btn btn--primary btn--sm">Подтвердить</button>
+                      </form>
+                    <% } %>
                     <a href="/bookings/<%= booking.id %>/edit" class="btn btn--outline btn--sm">Ред.</a>
                     <form action="/bookings/<%= booking.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить?')">
                       <button type="submit" class="btn btn--danger btn--sm">Удалить</button>

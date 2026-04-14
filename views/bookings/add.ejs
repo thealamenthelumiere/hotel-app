@@ -9,15 +9,25 @@
     </div>
     <div class="form-card">
       <form action="/bookings" method="post">
-        <div class="form-group">
-          <label>Гость</label>
-          <select name="guestId" required>
-            <option value="">— Выберите гостя —</option>
-            <% guests.forEach(g => { %>
-              <option value="<%= g.id %>"><%= g.name %> (<%= g.email %>)</option>
-            <% }) %>
-          </select>
-        </div>
+
+        <% if (locals.isAdmin) { %>
+          <div class="form-group">
+            <label>Гость</label>
+            <select name="guestId" required>
+              <option value="">— Выберите гостя —</option>
+              <% guests.forEach(g => { %>
+                <option value="<%= g.id %>"><%= g.name %> (<%= g.email %>)</option>
+              <% }) %>
+            </select>
+          </div>
+        <% } else { %>
+          <input type="hidden" name="guestId" value="<%= currentGuest ? currentGuest.id : '' %>">
+          <div class="form-group">
+            <label>Гость</label>
+            <input type="text" value="<%= currentGuest ? currentGuest.name : user %>" disabled style="background:#f5f5f5;">
+          </div>
+        <% } %>
+
         <div class="form-group">
           <label>Номер</label>
           <select name="roomId" required>
@@ -27,22 +37,28 @@
             <% }) %>
           </select>
         </div>
+
         <div class="form-group">
           <label>Дата заезда</label>
           <input type="date" name="checkInDate" required>
         </div>
+
         <div class="form-group">
           <label>Дата выезда</label>
           <input type="date" name="checkOutDate" required>
         </div>
-        <div class="form-group">
-          <label>Статус</label>
-          <select name="status">
-            <option value="pending">Ожидает</option>
-            <option value="confirmed">Подтверждено</option>
-            <option value="cancelled">Отменено</option>
-          </select>
-        </div>
+
+        <% if (locals.isAdmin) { %>
+          <div class="form-group">
+            <label>Статус</label>
+            <select name="status">
+              <option value="pending">Ожидает</option>
+              <option value="confirmed">Подтверждено</option>
+              <option value="cancelled">Отменено</option>
+            </select>
+          </div>
+        <% } %>
+
         <% if (services && services.length) { %>
           <div class="form-group">
             <label>Дополнительные услуги</label>
@@ -54,8 +70,9 @@
             <% }) %>
           </div>
         <% } %>
+
         <div class="form-actions">
-          <button type="submit" class="btn btn--primary">Создать</button>
+          <button type="submit" class="btn btn--primary">Забронировать</button>
           <a href="/bookings" class="btn btn--outline">Отмена</a>
         </div>
       </form>

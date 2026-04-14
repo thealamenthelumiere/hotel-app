@@ -25,6 +25,19 @@ export class GuestsService {
     return this.guestsRepository.findOneOrFail({ where: { id } });
   }
 
+  async findByUserId(userId: string): Promise<Guest | null> {
+    return this.guestsRepository.findOne({ where: { userId } });
+  }
+
+  async findOrCreateByUser(userId: string, name: string, email: string): Promise<Guest> {
+    let guest = await this.findByUserId(userId);
+    if (!guest) {
+      guest = this.guestsRepository.create({ name, email, userId });
+      guest = await this.guestsRepository.save(guest);
+    }
+    return guest;
+  }
+
   async update(id: string, updateGuestDto: UpdateGuestDto): Promise<Guest> {
     await this.guestsRepository.update(id, updateGuestDto);
     return this.findOne(id);

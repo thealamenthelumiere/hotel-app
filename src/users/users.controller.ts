@@ -67,10 +67,12 @@ export class UsersController {
       userId?: string;
       userRole?: string;
       userName?: string;
+      userEmail?: string;
     };
     session.userId = user.id;
     session.userRole = user.role;
     session.userName = user.name || user.email;
+    session.userEmail = user.email;
     return res.redirect('/');
   }
 
