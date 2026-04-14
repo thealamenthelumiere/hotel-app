@@ -1,54 +1,69 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1>Бронирования</h1>
-<a href="/bookings/add">Добавить бронирование</a>
-<table border="1">
-  <thead>
-    <tr><th>ID</th><th>Гость</th><th>Номер</th><th>Заезд</th><th>Выезд</th><th>Статус</th><th>Сумма</th><th>Действия</th></tr>
-  </thead>
-  <tbody>
-    <% bookings.forEach(booking => { %>
-      <tr>
-        <td><%= String(booking.id).substring(0,6) %>...</td>
-        <td><%= booking.guest ? booking.guest.name : '' %></td>
-        <td><%= booking.room ? booking.room.number : '' %></td>
-        <td><%= new Date(booking.checkInDate).toLocaleDateString() %></td>
-        <td><%= new Date(booking.checkOutDate).toLocaleDateString() %></td>
-        <td><%= booking.status %></td>
-        <td><%= booking.totalPrice %></td>
-        <td>
-          <a href="/bookings/<%= booking.id %>">Просмотр</a>
-          <a href="/bookings/<%= booking.id %>/edit">Ред.</a>
-          <form action="/bookings/<%= booking.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Удалить?')">
-            <button type="submit">Удалить</button>
-          </form>
-        </td>
-      </tr>
-    <% }) %>
-  </tbody>
-</table>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Бронирования</h1>
+      <% if (locals.isAuthenticated) { %>
+        <a href="/bookings/add" class="btn btn--primary">+ Добавить</a>
+      <% } %>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Гость</th><th>Номер</th><th>Заезд</th><th>Выезд</th><th>Статус</th><th>Сумма</th><th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (bookings && bookings.length) { %>
+          <% bookings.forEach(booking => { %>
+            <tr>
+              <td><%= String(booking.id).substring(0,8) %>…</td>
+              <td><%= booking.guest ? booking.guest.name : '—' %></td>
+              <td><%= booking.room ? booking.room.number : '—' %></td>
+              <td><%= new Date(booking.checkInDate).toLocaleDateString('ru-RU') %></td>
+              <td><%= new Date(booking.checkOutDate).toLocaleDateString('ru-RU') %></td>
+              <td><span class="badge badge--<%= booking.status %>"><%= booking.status %></span></td>
+              <td><%= booking.totalPrice %> ₽</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <a href="/bookings/<%= booking.id %>" class="btn btn--outline btn--sm">Просмотр</a>
+                  <% if (locals.isAdmin) { %>
+                    <a href="/bookings/<%= booking.id %>/edit" class="btn btn--outline btn--sm">Ред.</a>
+                    <form action="/bookings/<%= booking.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить?')">
+                      <button type="submit" class="btn btn--danger btn--sm">Удалить</button>
+                    </form>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="8" style="text-align:center;padding:24px;">Бронирования не найдены</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>
 
-<div id="toast" style="display:none; position:fixed; bottom:24px; right:24px; background:#323232; color:#fff; padding:14px 20px; border-radius:8px; font-size:14px; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
-
+<div id="toast" style="display:none;position:fixed;bottom:24px;right:24px;background:#323232;color:#fff;padding:14px 20px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
 <script>
   const toast = document.getElementById('toast');
   let toastTimer;
-
   function showToast(message) {
     toast.textContent = message;
     toast.style.display = 'block';
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
   }
-
   const eventSource = new EventSource('/bookings/sse');
   eventSource.onmessage = function(e) {
     const data = JSON.parse(e.data);
     showToast(data.message);
   };
-  eventSource.onerror = function() {
-    eventSource.close();
-  };
+  eventSource.onerror = function() { eventSource.close(); };
 </script>

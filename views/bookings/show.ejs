@@ -1,21 +1,37 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1>Детали бронирования</h1>
-<p><strong>ID:</strong> <%= booking.id %></p>
-<p><strong>Гость:</strong> <%= booking.guest ? booking.guest.name : '' %> (<%= booking.guest ? booking.guest.email : '' %>)</p>
-<p><strong>Номер:</strong> №<%= booking.room ? booking.room.number : '' %>, тип: <%= booking.room ? booking.room.type : '' %></p>
-<p><strong>Заезд:</strong> <%= new Date(booking.checkInDate).toLocaleDateString() %></p>
-<p><strong>Выезд:</strong> <%= new Date(booking.checkOutDate).toLocaleDateString() %></p>
-<p><strong>Статус:</strong> <%= booking.status %></p>
-<p><strong>Сумма:</strong> <%= booking.totalPrice %> руб.</p>
-<% if (booking.services && booking.services.length) { %>
-  <h3>Услуги:</h3>
-  <ul>
-    <% booking.services.forEach(s => { %>
-      <li><%= s.name %> – <%= s.price %> руб.</li>
-    <% }) %>
-  </ul>
-<% } %>
-<a href="/bookings">Назад</a>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Бронирование</h1>
+      <a href="/bookings" class="btn btn--outline">← Назад</a>
+    </div>
+    <div class="form-card">
+      <p><strong>ID:</strong> <%= booking.id %></p>
+      <p><strong>Гость:</strong> <%= booking.guest ? booking.guest.name : '—' %> (<%= booking.guest ? booking.guest.email : '' %>)</p>
+      <p><strong>Номер:</strong> №<%= booking.room ? booking.room.number : '—' %>, <%= booking.room ? booking.room.type : '' %></p>
+      <p><strong>Заезд:</strong> <%= new Date(booking.checkInDate).toLocaleDateString('ru-RU') %></p>
+      <p><strong>Выезд:</strong> <%= new Date(booking.checkOutDate).toLocaleDateString('ru-RU') %></p>
+      <p><strong>Статус:</strong> <span class="badge badge--<%= booking.status %>"><%= booking.status %></span></p>
+      <p><strong>Сумма:</strong> <%= booking.totalPrice %> ₽</p>
+      <% if (booking.services && booking.services.length) { %>
+        <p><strong>Услуги:</strong></p>
+        <ul>
+          <% booking.services.forEach(s => { %><li><%= s.name %> — <%= s.price %> руб.</li><% }) %>
+        </ul>
+      <% } %>
+      <% if (locals.isAdmin) { %>
+        <div class="form-actions">
+          <a href="/bookings/<%= booking.id %>/edit" class="btn btn--primary">Редактировать</a>
+          <form action="/bookings/<%= booking.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить бронирование?')">
+            <button type="submit" class="btn btn--danger">Удалить</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>

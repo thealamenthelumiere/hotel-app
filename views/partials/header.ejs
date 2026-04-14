@@ -1,23 +1,29 @@
 <header class="header">
-  <div class="logo">
-    <a href="/"><h1>Талион Империал</h1></a>
-  </div>
-  <nav>
-    <ul>
-      <li><a href="/about">О нас</a></li>
-      <li><a href="/rooms">Номера</a></li>
-      <li><a href="/constructor">Досуг</a></li>
-      <li><a href="/services">Услуги</a></li>
-      <li><a href="/contact">Контакты</a></li>
-      <li><a href="/reviews">Отзывы</a></li>
-    </ul>
-  </nav>
-  <div class="auth">
-    <% if (isAuthenticated) { %>
-      <span>Вы вошли как <strong><%= user %></strong></span>
-      <a href="/logout">Выйти</a>
-    <% } else { %>
-      <a href="/login">Войти</a> | <a href="/register">Регистрация</a>
-    <% } %>
+  <div class="container header__inner">
+    <div class="logo">
+      <a href="/"><span>Талион Империал</span></a>
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="/about">О нас</a></li>
+        <li><a href="/rooms">Номера</a></li>
+        <li><a href="/constructor">Досуг</a></li>
+        <li><a href="/services">Услуги</a></li>
+        <li><a href="/contact">Контакты</a></li>
+        <li><a href="/reviews">Отзывы</a></li>
+      </ul>
+    </nav>
+    <div class="auth">
+      <% if (locals.isAuthenticated) { %>
+        <span>Вы вошли как <strong><%= locals.user %></strong></span>
+        <% if (locals.isAdmin) { %>
+          <span class="role-badge">Администратор</span>
+        <% } %>
+        <a href="/auth/logout" class="btn btn--outline">Выйти</a>
+      <% } else { %>
+        <a href="/auth/login" class="btn btn--outline">Войти</a>
+        <a href="/auth/register" class="btn btn--primary">Регистрация</a>
+      <% } %>
+    </div>
   </div>
 </header>

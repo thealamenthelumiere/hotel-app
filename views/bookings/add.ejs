@@ -1,38 +1,67 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1>Новое бронирование</h1>
-<form action="/bookings" method="post">
-  <label>Гость: 
-    <select name="guestId" required>
-      <option value="">--Выберите--</option>
-      <% guests.forEach(g => { %>
-        <option value="<%= g.id %>"><%= g.name %></option>
-      <% }) %>
-    </select>
-  </label>
-  <label>Номер:
-    <select name="roomId" required>
-      <option value="">--Выберите--</option>
-      <% rooms.forEach(r => { %>
-        <option value="<%= r.id %>">№<%= r.number %> – <%= r.pricePerNight %> руб.</option>
-      <% }) %>
-    </select>
-  </label>
-  <label>Заезд: <input type="date" name="checkInDate" required></label>
-  <label>Выезд: <input type="date" name="checkOutDate" required></label>
-  <label>Статус:
-    <select name="status">
-      <option value="pending">Ожидает</option>
-      <option value="confirmed">Подтверждено</option>
-    </select>
-  </label>
-  <fieldset>
-    <legend>Доп. услуги</legend>
-    <% services.forEach(s => { %>
-      <label><input type="checkbox" name="serviceIds" value="<%= s.id %>"> <%= s.name %> (+<%= s.price %>)</label>
-    <% }) %>
-  </fieldset>
-  <button type="submit">Создать</button>
-</form>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Новое бронирование</h1>
+      <a href="/bookings" class="btn btn--outline">← Назад</a>
+    </div>
+    <div class="form-card">
+      <form action="/bookings" method="post">
+        <div class="form-group">
+          <label>Гость</label>
+          <select name="guestId" required>
+            <option value="">— Выберите гостя —</option>
+            <% guests.forEach(g => { %>
+              <option value="<%= g.id %>"><%= g.name %> (<%= g.email %>)</option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Номер</label>
+          <select name="roomId" required>
+            <option value="">— Выберите номер —</option>
+            <% rooms.forEach(r => { %>
+              <option value="<%= r.id %>">№<%= r.number %> — <%= r.type %>, <%= r.pricePerNight %> руб/ночь</option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Дата заезда</label>
+          <input type="date" name="checkInDate" required>
+        </div>
+        <div class="form-group">
+          <label>Дата выезда</label>
+          <input type="date" name="checkOutDate" required>
+        </div>
+        <div class="form-group">
+          <label>Статус</label>
+          <select name="status">
+            <option value="pending">Ожидает</option>
+            <option value="confirmed">Подтверждено</option>
+            <option value="cancelled">Отменено</option>
+          </select>
+        </div>
+        <% if (services && services.length) { %>
+          <div class="form-group">
+            <label>Дополнительные услуги</label>
+            <% services.forEach(s => { %>
+              <label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-weight:normal;">
+                <input type="checkbox" name="serviceIds" value="<%= s.id %>">
+                <%= s.name %> (+<%= s.price %> руб.)
+              </label>
+            <% }) %>
+          </div>
+        <% } %>
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Создать</button>
+          <a href="/bookings" class="btn btn--outline">Отмена</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>

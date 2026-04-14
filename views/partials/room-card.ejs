@@ -1,5 +1,8 @@
-<div class="room">
-  <h3><%= room.name %></h3>
-  <p><%= room.description %></p>
-  <p>Цена: <%= room.price %> руб/ночь</p>
+<div class="room-card">
+  <div class="room-card__body">
+    <h3 class="room-card__title"><%= room.title || room.type %></h3>
+    <p class="room-card__desc"><%= room.description %></p>
+    <p class="room-card__price">от <strong><%= room.price || room.pricePerNight %></strong> руб/ночь</p>
+    <% if (room.capacity) { %><p class="room-card__capacity">Вместимость: <%= room.capacity %> чел.</p><% } %>
+  </div>
 </div>

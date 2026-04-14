@@ -1,15 +1,39 @@
+<%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1>Список услуг</h1>
-<a href="/services/add">Добавить услугу</a>
-<ul>
-  <% services.forEach(service => { %>
-    <li>
-      <a href="/services/<%= service.id %>"><%= service.name %></a> - <%= service.price %> руб.
-      <form action="/services/<%= service.id %>?_method=DELETE" method="post" style="display:inline;">
-        <button type="submit">Удалить</button>
-      </form>
-      <a href="/services/<%= service.id %>/edit">Редактировать</a>
-    </li>
-  <% }) %>
-</ul>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Услуги</h1>
+      <% if (locals.isAdmin) { %>
+        <a href="/services/add" class="btn btn--primary">+ Добавить услугу</a>
+      <% } %>
+    </div>
+    <div class="card-list">
+      <% if (services && services.length) { %>
+        <% services.forEach(service => { %>
+          <div class="card">
+            <div class="card__info">
+              <p class="card__title"><%= service.name %></p>
+              <p class="card__sub"><%= service.price %> руб.<% if (service.duration) { %> · <%= service.duration %> мин.<% } %></p>
+            </div>
+            <div class="card__actions">
+              <a href="/services/<%= service.id %>" class="btn btn--outline btn--sm">Просмотр</a>
+              <% if (locals.isAdmin) { %>
+                <a href="/services/<%= service.id %>/edit" class="btn btn--outline btn--sm">Изменить</a>
+                <form action="/services/<%= service.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить услугу?')">
+                  <button type="submit" class="btn btn--danger btn--sm">Удалить</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p>Услуги не найдены.</p>
+      <% } %>
+    </div>
+  </div>
+</main>
+
 <%- include('../partials/footer') %>
+<%- include('../partials/scripts') %>

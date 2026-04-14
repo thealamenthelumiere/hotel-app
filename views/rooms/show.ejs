@@ -1,14 +1,28 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1>Номер <%= room.number %></h1>
-<p>Тип: <%= room.type %></p>
-<p>Цена: <%= room.pricePerNight %> руб.</p>
-<p>Вместимость: <%= room.capacity %> чел.</p>
-<p>Описание: <%= room.description || 'нет' %></p>
-<a href="/rooms/<%= room.id %>/edit">Редактировать</a>
-<form action="/rooms/<%= room.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Удалить номер?')">
-  <button type="submit">Удалить</button>
-</form>
-<a href="/rooms">Назад к списку</a>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title">Номер <%= room.number %></h1>
+      <a href="/rooms" class="btn btn--outline">← Назад</a>
+    </div>
+    <div class="form-card">
+      <p><strong>Тип:</strong> <%= room.type %></p>
+      <p><strong>Цена:</strong> <%= room.pricePerNight %> руб/ночь</p>
+      <p><strong>Вместимость:</strong> <%= room.capacity %> чел.</p>
+      <p><strong>Описание:</strong> <%= room.description || 'Не указано' %></p>
+      <% if (locals.isAdmin) { %>
+        <div class="form-actions">
+          <a href="/rooms/<%= room.id %>/edit" class="btn btn--primary">Редактировать</a>
+          <form action="/rooms/<%= room.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить номер?')">
+            <button type="submit" class="btn btn--danger">Удалить</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>

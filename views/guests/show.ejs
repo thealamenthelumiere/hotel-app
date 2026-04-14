@@ -1,8 +1,27 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
-<h1><%= guest.name %></h1>
-<p>Email: <%= guest.email %></p>
-<p>Телефон: <%= guest.phone || 'не указан' %></p>
-<a href="/guests">Назад</a>
+
+<main class="page">
+  <div class="container">
+    <div class="page__header">
+      <h1 class="page__title"><%= guest.name %></h1>
+      <a href="/guests" class="btn btn--outline">← Назад</a>
+    </div>
+    <div class="form-card">
+      <p><strong>Email:</strong> <%= guest.email %></p>
+      <p><strong>Телефон:</strong> <%= guest.phone || 'Не указан' %></p>
+      <p><strong>Город:</strong> <%= guest.city || 'Не указан' %></p>
+      <% if (locals.isAdmin) { %>
+        <div class="form-actions">
+          <a href="/guests/<%= guest.id %>/edit" class="btn btn--primary">Редактировать</a>
+          <form action="/guests/<%= guest.id %>?_method=DELETE" method="post" onsubmit="return confirm('Удалить гостя?')">
+            <button type="submit" class="btn btn--danger">Удалить</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>

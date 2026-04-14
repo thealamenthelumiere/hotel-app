@@ -1,37 +1,36 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <%- include('partials/head') %>
-</head>
-<body>
-  <%- include('partials/header') %>
+<%- include('partials/head') %>
+<%- include('partials/header') %>
 
-  <main>
-        <!-- HERO: секция с фоновым видео -->
-    <section class="hero">
-      <!-- 1. Обёртка для видео-фона -->
-      <div class="video-background">
-        <video autoplay loop muted playsinline poster="/img/hero-poster.jpg">
-          <source src="/vid.mp4" type="video/mp4">
-          Ваш браузер не поддерживает фоновое видео.
-        </video>
+<main>
+  <section class="section section--hero">
+    <div class="section__media">
+      <video class="section__video" autoplay loop muted playsinline>
+        <source src="/vid.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="container section__container">
+      <h2 class="section__title">Добро пожаловать в Талион Империал</h2>
+      <p>Люкс-отель в сердце города.</p>
+      <a href="/rooms" class="btn btn--primary">Забронировать номер</a>
+    </div>
+  </section>
+
+  <section class="section" id="rooms">
+    <div class="container">
+      <h2>Наши номера</h2>
+      <div class="rooms-grid">
+        <% if (locals.rooms && locals.rooms.length) { %>
+          <% rooms.forEach(room => { %>
+            <%- include('partials/room-card', { room: room }) %>
+          <% }) %>
+        <% } else { %>
+          <p>Номера временно не загружены.</p>
+        <% } %>
       </div>
+    </div>
+  </section>
+</main>
 
-
-    <section id="rooms">
-      <h2>Номера</h2>
-      <% if (rooms && rooms.length) { %>
-        <% rooms.forEach(room => { %>
-          <%- include('partials/room-card', { room: room }) %>
-        <% }) %>
-      <% } else { %>
-        <p>Номера временно не загружены.</p>
-      <% } %>
-    </section>
-  </main>
-
-  <%- include('partials/footer') %>
-  <%- include('partials/modal') %>
-  <%- include('partials/scripts') %>
-</body>
-</html>
+<%- include('partials/footer') %>
+<%- include('partials/modal') %>
+<%- include('partials/scripts') %>
