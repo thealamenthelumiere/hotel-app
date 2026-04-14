@@ -9,9 +9,6 @@ import {
   Int,
 } from '@nestjs/graphql';
 import { BookingsService } from './bookings.service';
-import { GuestsService } from '../guests/guests.service';
-import { RoomsService } from '../rooms/rooms.service';
-import { ServicesService } from '../services/services.service';
 import { BookingType, BookingPage } from './graphql/booking.type';
 import { GuestType } from '../guests/graphql/guest.type';
 import { RoomType } from '../rooms/graphql/room.type';
@@ -21,12 +18,7 @@ import { Booking } from './entities/booking.entity';
 
 @Resolver(() => BookingType)
 export class BookingsResolver {
-  constructor(
-    private readonly bookingsService: BookingsService,
-    private readonly guestsService: GuestsService,
-    private readonly roomsService: RoomsService,
-    private readonly servicesService: ServicesService,
-  ) {}
+  constructor(private readonly bookingsService: BookingsService) {}
 
   @Query(() => BookingPage, {
     name: 'bookings',
@@ -53,16 +45,16 @@ export class BookingsResolver {
     return this.bookingsService.findOne(id);
   }
 
-  // ─── Field resolvers (lazy-load связанных сущностей) ─────────────────────
+  // ─── Field resolvers ──────────────────────────────────────────────────────
 
-  @ResolveField(() => GuestType, { nullable: true, description: 'Гость бронирования', complexity: 2 })
+  @ResolveField(() => GuestType, { nullable: true, description: 'Гость', complexity: 2 })
   async guest(@Parent() booking: Booking): Promise<GuestType | null> {
     if (booking.guest) return booking.guest as any;
     const full = await this.bookingsService.findOne(booking.id);
     return full.guest as any;
   }
 
-  @ResolveField(() => RoomType, { nullable: true, description: 'Номер бронирования', complexity: 2 })
+  @ResolveField(() => RoomType, { nullable: true, description: 'Номер', complexity: 2 })
   async room(@Parent() booking: Booking): Promise<RoomType | null> {
     if (booking.room) return booking.room as any;
     const full = await this.bookingsService.findOne(booking.id);
@@ -92,16 +84,16 @@ export class BookingsResolver {
   }
 
   @Mutation(() => BookingType, {
-    description: 'Подтвердить бронирование (перевести в статус confirmed)',
+    description: 'Подтвердить бронирование (статус → confirmed)',
   })
-  confirmBooking(@Args('id', { type: () => ID, description: 'UUID бронирования' }) id: string) {
+  confirmBooking(@Args('id', { type: () => ID }) id: string) {
     return this.bookingsService.update(id, { status: 'confirmed' } as any);
   }
 
   @Mutation(() => BookingType, {
-    description: 'Отменить бронирование (перевести в статус cancelled)',
+    description: 'Отменить бронирование (статус → cancelled)',
   })
-  cancelBooking(@Args('id', { type: () => ID, description: 'UUID бронирования' }) id: string) {
+  cancelBooking(@Args('id', { type: () => ID }) id: string) {
     return this.bookingsService.update(id, { status: 'cancelled' } as any);
   }
 
