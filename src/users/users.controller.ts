@@ -1,12 +1,12 @@
-// src/users/users.controller.ts
 import {
   Controller,
   Post,
+  Get,
   Body,
-  HttpCode,
   HttpStatus,
   Res,
   Req,
+  Render,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,16 +17,38 @@ import { Request, Response } from 'express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get('login')
+  @Render('auth/login')
+  getLogin(@Req() req: Request) {
+    const session = req.session as { userId?: string };
+    if (session.userId) return { redirect: '/' };
+    return { error: null };
+  }
+
+  @Get('register')
+  @Render('auth/register')
+  getRegister(@Req() req: Request) {
+    const session = req.session as { userId?: string };
+    if (session.userId) return { redirect: '/' };
+    return { error: null };
+  }
+
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
-    const user = await this.usersService.register(createUserDto);
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: 'User registered', userId: user.id });
+  async register(
+    @Body() createUserDto: CreateUserDto,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.usersService.register(createUserDto);
+      return res.redirect('/auth/login');
+    } catch {
+      return res.status(HttpStatus.OK).render('auth/register', {
+        error: 'Пользователь с таким email уже существует',
+      });
+    }
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
   async login(
     @Body() loginDto: LoginUserDto,
     @Req() req: Request,
@@ -37,23 +59,25 @@ export class UsersController {
       loginDto.password,
     );
     if (!user) {
-      return res
-        .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: 'Invalid credentials' });
+      return res.status(HttpStatus.OK).render('auth/login', {
+        error: 'Неверный email или пароль',
+      });
     }
-    req.session.userId = user.id;
-    req.session.userRole = user.role;
-    req.session.userName = user.name || user.email;
-    return res.json({ message: 'Login successful', role: user.role });
+    const session = req.session as {
+      userId?: string;
+      userRole?: string;
+      userName?: string;
+    };
+    session.userId = user.id;
+    session.userRole = user.role;
+    session.userName = user.name || user.email;
+    return res.redirect('/');
   }
 
-  @Post('logout')
+  @Get('logout')
   logout(@Req() req: Request, @Res() res: Response) {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: 'Logout failed' });
-      }
-      res.json({ message: 'Logged out' });
+    req.session.destroy(() => {
+      res.redirect('/');
     });
   }
 }

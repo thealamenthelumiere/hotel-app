@@ -5,6 +5,7 @@ import { join } from 'path';
 import session = require('express-session');
 import methodOverride = require('method-override');
 import { AppModule } from './app.module';
+import { UsersService } from './users/users.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -39,6 +40,14 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Сервер запущен на http://localhost:${port}`);
+
+  // Создаём учётную запись администратора при старте (если не существует)
+  const usersService = app.get(UsersService);
+  await usersService.createAdmin(
+    process.env.ADMIN_EMAIL || 'admin@hotel.ru',
+    process.env.ADMIN_PASSWORD || 'admin123',
+    'Администратор',
+  );
 }
 
 bootstrap();

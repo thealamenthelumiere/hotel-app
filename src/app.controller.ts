@@ -1,103 +1,62 @@
-import { Controller, Get, Render, Query } from '@nestjs/common';
+import { Controller, Get, Render, Req } from '@nestjs/common';
+import { Request } from 'express';
+
+function sessionLocals(req: Request) {
+  const session = req.session as {
+    userId?: string;
+    userRole?: string;
+    userName?: string;
+  };
+  return {
+    isAuthenticated: !!session.userId,
+    isAdmin: session.userRole === 'admin',
+    user: session.userName || null,
+  };
+}
 
 @Controller()
 export class AppController {
   @Get()
   @Render('index')
-  getIndex(@Query('auth') auth: string) {
-    // Если auth=1, считаем пользователя авторизованным
-    const isAuthenticated = auth === '1';
-    // Имя пользователя можно задать статически (или брать из сессии в будущем)
-    const user = isAuthenticated ? 'Гость' : null;
-
-    // Пример данных для номеров (можно оставить как есть)
+  getIndex(@Req() req: Request) {
     const rooms = [
       { title: 'Люкс', description: 'Номер комфорт класса с двумя спальнями' },
-      {
-        title: 'Стандарт',
-        description: 'Номер с двухместной кроватью и всеми удобствами',
-      },
+      { title: 'Стандарт', description: 'Номер с двухместной кроватью и всеми удобствами' },
     ];
-
-    return { isAuthenticated, user, rooms };
+    return { ...sessionLocals(req), rooms };
   }
 
   @Get('about')
   @Render('about')
-  getAbout(@Query('auth') auth: string) {
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return {
-      isAuthenticated: Boolean,
-      user,
-      title: 'О нас - Талион Империал', // для тега <title>
-    };
+  getAbout(@Req() req: Request) {
+    return { ...sessionLocals(req), title: 'О нас - Талион Империал' };
   }
+
   @Get('contact')
   @Render('contact')
-  getContact(@Query('auth') auth: string) {
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return {
-      isAuthenticated,
-      user,
-      title: 'Контакты - Талион Империал',
-    };
+  getContact(@Req() req: Request) {
+    return { ...sessionLocals(req), title: 'Контакты - Талион Империал' };
   }
+
   @Get('rooms')
   @Render('rooms')
-  getRooms(@Query('auth') auth: string) {
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    // Позже здесь можно получать реальные данные из базы
+  getRooms(@Req() req: Request) {
     const rooms = [
-      {
-        title: 'Стандарт',
-        description: 'Уютный номер с современным дизайном и всеми удобствами.',
-      },
-      {
-        title: 'Люкс',
-        description: 'Просторный номер с гостиной зоной и панорамным видом.',
-      },
+      { title: 'Стандарт', description: 'Уютный номер с современным дизайном и всеми удобствами.' },
+      { title: 'Люкс', description: 'Просторный номер с гостиной зоной и панорамным видом.' },
     ];
-    return {
-      isAuthenticated,
-      user,
-      title: 'Номера - Талион Империал',
-      rooms,
-    };
+    return { ...sessionLocals(req), title: 'Номера - Талион Империал', rooms };
   }
+
   @Get('constructor')
   @Render('constructor')
-  getConstructor(@Query('auth') auth: string) {
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return {
-      isAuthenticated,
-      user,
-      title: 'Конструктор расписания - Талион Империал',
-    };
+  getConstructor(@Req() req: Request) {
+    return { ...sessionLocals(req), title: 'Конструктор расписания - Талион Империал' };
   }
-  @Get('services')
-  @Render('services')
-  getServices(@Query('auth') auth: string) {
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return {
-      isAuthenticated,
-      user,
-      title: 'Услуги - Талион Империал',
-    };
-  }
+
   @Get('reviews')
   @Render('reviews')
-  getReviews(@Query('auth') auth: string) {
-    const isAuthenticated = auth === '1';
-    const user = isAuthenticated ? 'Гость' : null;
-    return {
-      isAuthenticated,
-      user,
-      title: 'Отзывы - Талион Империал',
-    };
+  getReviews(@Req() req: Request) {
+    return { ...sessionLocals(req), title: 'Отзывы - Талион Империал' };
   }
 }
