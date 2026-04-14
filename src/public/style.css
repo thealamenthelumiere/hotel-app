@@ -751,6 +751,10 @@ main {
     padding-bottom: 60px;
     min-height: 100vh;
 }
+/* На главной героя секция сама делает отступ, убираем дублирование */
+main:has(.section--hero) {
+    padding-top: 0;
+}
 
 /* ===== CRUD страницы ===== */
 .page {
