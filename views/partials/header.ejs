@@ -18,6 +18,7 @@
         <span>Вы вошли как <strong><%= locals.user %></strong></span>
         <% if (locals.isAdmin) { %>
           <span class="role-badge">Администратор</span>
+          <a href="/bookings" class="btn btn--primary">Бронирования</a>
         <% } %>
         <a href="/auth/logout" class="btn btn--outline">Выйти</a>
       <% } else { %>

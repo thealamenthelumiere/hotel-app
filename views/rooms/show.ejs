@@ -13,9 +13,9 @@
       <p><strong>Вместимость:</strong> <%= room.capacity %> чел.</p>
       <p><strong>Описание:</strong> <%= room.description || 'Не указано' %></p>
       <div class="form-actions">
-        <% if (locals.isAuthenticated) { %>
+        <% if (locals.isAuthenticated && !locals.isAdmin) { %>
           <a href="/bookings/add?roomId=<%= room.id %>" class="btn btn--primary">Забронировать</a>
-        <% } else { %>
+        <% } else if (!locals.isAuthenticated) { %>
           <a href="/auth/login" class="btn btn--primary">Войдите чтобы забронировать</a>
         <% } %>
         <% if (locals.isAdmin) { %>
