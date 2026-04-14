@@ -50,8 +50,8 @@ async function bootstrap() {
       'Администратор',
     );
     console.log('Администратор готов: admin@hotel.ru');
-  } catch (e) {
-    console.warn('Не удалось создать администратора:', e.message);
+  } catch (e: unknown) {
+    console.warn('Не удалось создать администратора:', e instanceof Error ? e.message : e);
   }
 }
 
