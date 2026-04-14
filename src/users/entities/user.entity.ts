@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 import { Guest } from '../../guests/entities/guest.entity';
 
 export enum UserRole {
@@ -33,6 +27,5 @@ export class User {
   createdAt: Date;
 
   @OneToOne(() => Guest, (guest) => guest.user)
-  @JoinColumn({ name: 'userId' })
   guest: Guest;
 }

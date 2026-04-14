@@ -23,7 +23,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: config.password ?? '',
       database: config.database ?? 'postgres',
       entities: [__dirname + '/../**/*.entity.{js,ts}'],
-      synchronize: false,
+      synchronize: true,
       migrationsRun: false,
       logging: true,
       ssl: true,

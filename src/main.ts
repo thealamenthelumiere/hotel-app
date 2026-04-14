@@ -42,12 +42,17 @@ async function bootstrap() {
   console.log(`Сервер запущен на http://localhost:${port}`);
 
   // Создаём учётную запись администратора при старте (если не существует)
-  const usersService = app.get(UsersService);
-  await usersService.createAdmin(
-    process.env.ADMIN_EMAIL || 'admin@hotel.ru',
-    process.env.ADMIN_PASSWORD || 'admin123',
-    'Администратор',
-  );
+  try {
+    const usersService = app.get(UsersService);
+    await usersService.createAdmin(
+      process.env.ADMIN_EMAIL || 'admin@hotel.ru',
+      process.env.ADMIN_PASSWORD || 'admin123',
+      'Администратор',
+    );
+    console.log('Администратор готов: admin@hotel.ru');
+  } catch (e) {
+    console.warn('Не удалось создать администратора:', e.message);
+  }
 }
 
 bootstrap();
