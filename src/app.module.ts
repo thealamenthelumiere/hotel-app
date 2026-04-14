@@ -45,6 +45,9 @@ const MAX_COMPLEXITY = 50;
           async requestDidStart() {
             return {
               async didResolveOperation({ request, document, schema }: any) {
+                // Пропускаем introspection-запросы
+                if (request.operationName === 'IntrospectionQuery') return;
+
                 const complexity = getComplexity({
                   schema,
                   operationName: request.operationName,
