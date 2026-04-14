@@ -121,14 +121,14 @@ export class BookingsService {
       );
     }
 
-    // Пересчёт цены
+    // Пересчёт цены (date-колонки из PostgreSQL приходят строкой, поэтому new Date())
     const nights = Math.ceil(
-      (booking.checkOutDate.getTime() - booking.checkInDate.getTime()) /
+      (new Date(booking.checkOutDate).getTime() - new Date(booking.checkInDate).getTime()) /
         (1000 * 60 * 60 * 24),
     );
-    let totalPrice = booking.room.pricePerNight * nights;
+    let totalPrice = Number(booking.room.pricePerNight) * nights;
     if (booking.services && booking.services.length) {
-      totalPrice += booking.services.reduce((sum, s) => sum + s.price, 0);
+      totalPrice += booking.services.reduce((sum, s) => sum + Number(s.price), 0);
     }
     booking.totalPrice = totalPrice;
 
