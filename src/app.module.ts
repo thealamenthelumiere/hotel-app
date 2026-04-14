@@ -1,6 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLError } from 'graphql';
+import {
+  fieldExtensionsEstimator,
+  getComplexity,
+  simpleEstimator,
+} from 'graphql-query-complexity';
+import { join } from 'path';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { GuestsModule } from './guests/guests.module';
 import { BookingsModule } from './bookings/bookings.module';
@@ -11,11 +20,49 @@ import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+const MAX_COMPLEXITY = 50;
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: false,
+      introspection: true,
+      buildSchemaOptions: {
+        numberScalarMode: 'integer',
+      },
+      plugins: [
+        {
+          // Проверка сложности запроса перед выполнением
+          async requestDidStart() {
+            return {
+              async didResolveOperation({ request, document, schema }: any) {
+                const complexity = getComplexity({
+                  schema,
+                  operationName: request.operationName,
+                  query: document,
+                  variables: request.variables,
+                  estimators: [
+                    fieldExtensionsEstimator(),
+                    simpleEstimator({ defaultComplexity: 1 }),
+                  ],
+                });
+                if (complexity > MAX_COMPLEXITY) {
+                  throw new GraphQLError(
+                    `Сложность запроса (${complexity}) превышает максимально допустимую (${MAX_COMPLEXITY})`,
+                  );
+                }
+              },
+            };
+          },
+        },
+      ],
     }),
     GuestsModule,
     BookingsModule,

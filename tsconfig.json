@@ -10,7 +10,8 @@
     "emitDecoratorMetadata": true,   
     "experimentalDecorators": true,    
     "forceConsistentCasingInFileNames": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
