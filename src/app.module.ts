@@ -34,6 +34,7 @@ const MAX_COMPLEXITY = 50;
       sortSchema: true,
       playground: false,
       introspection: true,
+      csrfPrevention: false,
       buildSchemaOptions: {
         numberScalarMode: 'integer',
       },
