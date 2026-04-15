@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, Float } from '@nestjs/graphql';
 import { RoomsService } from './rooms.service';
 import { RoomType } from './graphql/room.type';
 import { CreateRoomInput, UpdateRoomInput } from './graphql/room.input';
@@ -12,8 +12,17 @@ export class RoomsResolver {
     description: 'Получить список всех номеров',
     complexity: 2,
   })
-  findAll() {
-    return this.roomsService.findAll();
+  async findAll(
+    @Args('minPrice', { type: () => Float, nullable: true, description: 'Минимальная цена за ночь' }) minPrice?: number,
+    @Args('maxPrice', { type: () => Float, nullable: true, description: 'Максимальная цена за ночь' }) maxPrice?: number,
+  ) {
+    const rooms = await this.roomsService.findAll();
+    return rooms.filter(r => {
+      const price = Number(r.pricePerNight);
+      if (minPrice !== undefined && price < minPrice) return false;
+      if (maxPrice !== undefined && price > maxPrice) return false;
+      return true;
+    });
   }
 
   @Query(() => RoomType, {
