@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Put,
+  Patch,
   Delete,
   ParseUUIDPipe,
   HttpCode,
@@ -62,11 +63,25 @@ export class GuestsApiController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить данные гостя' })
+  @ApiOperation({ summary: 'Полное обновление гостя' })
   @ApiParam({ name: 'id', description: 'UUID гостя' })
   @ApiResponse({ status: 200, description: 'Гость обновлён', type: Guest })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiResponse({ status: 404, description: 'Гость не найден' })
   update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateGuestDto: UpdateGuestDto,
+  ) {
+    return this.guestsService.update(id, updateGuestDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Частичное обновление гостя' })
+  @ApiParam({ name: 'id', description: 'UUID гостя' })
+  @ApiResponse({ status: 200, description: 'Гость обновлён', type: Guest })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 404, description: 'Гость не найден' })
+  patch(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateGuestDto: UpdateGuestDto,
   ) {

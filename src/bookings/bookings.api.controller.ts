@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Put,
+  Patch,
   Delete,
   ParseUUIDPipe,
   HttpCode,
@@ -63,11 +64,25 @@ export class BookingsApiController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить бронирование' })
+  @ApiOperation({ summary: 'Полное обновление бронирования' })
   @ApiParam({ name: 'id', description: 'UUID бронирования' })
   @ApiResponse({ status: 200, description: 'Бронирование обновлено', type: Booking })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiResponse({ status: 404, description: 'Бронирование не найдено' })
   update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateBookingDto: UpdateBookingDto,
+  ) {
+    return this.bookingsService.update(id, updateBookingDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Частичное обновление бронирования' })
+  @ApiParam({ name: 'id', description: 'UUID бронирования' })
+  @ApiResponse({ status: 200, description: 'Бронирование обновлено', type: Booking })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 404, description: 'Бронирование не найдено' })
+  patch(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateBookingDto: UpdateBookingDto,
   ) {
