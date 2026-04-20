@@ -1,6 +1,22 @@
 <footer class="footer">
   <div class="container">
     <p>© 2025 Талион Империал. Все права защищены.</p>
+    <% if (typeof serverTime !== 'undefined') { %>
+    <p class="timing-info" style="font-size:0.75rem;color:#888;margin-top:4px;">
+      Время обработки на сервере: <strong><%= serverTime %>ms</strong>
+      <span id="client-time-label"></span>
+    </p>
+    <script>
+      (function() {
+        var perfEntry = performance.getEntriesByType('navigation')[0];
+        if (perfEntry) {
+          var clientMs = Math.round(perfEntry.domContentLoadedEventEnd - perfEntry.fetchStart);
+          document.getElementById('client-time-label').textContent =
+            ' · Время на клиенте: ' + clientMs + 'ms';
+        }
+      })();
+    </script>
+    <% } %>
   </div>
 </footer>
 </body>

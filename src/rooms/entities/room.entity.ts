@@ -21,6 +21,9 @@ export class Room {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  imageUrl: string;
+
   @OneToMany(() => Booking, (booking) => booking.room)
   bookings: Booking[];
 }

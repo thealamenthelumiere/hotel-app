@@ -12,6 +12,11 @@ import {
   HttpStatus,
   Query,
   Res,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,19 +24,28 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { Response } from 'express';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './entities/room.entity';
 import { paginate, PaginationQuery } from '../common/pagination';
+import { StorageService } from '../storage/storage.service';
 
 @ApiTags('rooms')
 @Controller('api/rooms')
 export class RoomsApiController {
-  constructor(private readonly roomsService: RoomsService) {}
+  constructor(
+    private readonly roomsService: RoomsService,
+    private readonly storageService: StorageService,
+  ) {}
 
+  @UseInterceptors(CacheInterceptor)
   @Get()
   @ApiOperation({ summary: 'Список всех номеров' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
@@ -46,6 +60,7 @@ export class RoomsApiController {
     return paginate(rooms, query, res, '/api/rooms');
   }
 
+  @UseInterceptors(CacheInterceptor)
   @Get(':id')
   @ApiOperation({ summary: 'Получить номер по ID' })
   @ApiParam({ name: 'id', description: 'UUID номера' })
@@ -88,6 +103,40 @@ export class RoomsApiController {
     @Body() updateRoomDto: UpdateRoomDto,
   ) {
     return this.roomsService.update(id, updateRoomDto);
+  }
+
+  @Post(':id/image')
+  @ApiOperation({ summary: 'Загрузить фото номера в Yandex Object Storage' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'UUID номера' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary', description: 'Фото номера (jpg/png/webp, до 5MB)' },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Фото загружено, ссылка сохранена', type: Room })
+  @ApiResponse({ status: 400, description: 'Неверный формат или размер файла' })
+  @ApiResponse({ status: 404, description: 'Номер не найден' })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const ext = file.originalname.split('.').pop() ?? 'jpg';
+    const key = `rooms/${id}-${Date.now()}.${ext}`;
+    const imageUrl = await this.storageService.upload(key, file.buffer, file.mimetype);
+    return this.roomsService.update(id, { imageUrl } as UpdateRoomDto);
   }
 
   @Delete(':id')

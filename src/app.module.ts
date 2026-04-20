@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
@@ -19,6 +21,8 @@ import { ServicesModule } from './services/services.module';
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TimingInterceptor } from './common/interceptors/timing.interceptor';
+import { EtagInterceptor } from './common/interceptors/etag.interceptor';
 
 const MAX_COMPLEXITY = 50;
 
@@ -27,6 +31,12 @@ const MAX_COMPLEXITY = 50;
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
+    }),
+    // Серверный in-memory кэш (TTL 5 секунд, используется для номеров)
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 5000, // 5 секунд в миллисекундах
+      max: 100,
     }),
     GuestsModule,
     BookingsModule,
@@ -47,11 +57,9 @@ const MAX_COMPLEXITY = 50;
       plugins: [
         ApolloServerPluginLandingPageLocalDefault({ embed: true }),
         {
-          // Проверка сложности запроса перед выполнением
           async requestDidStart() {
             return {
               async didResolveOperation({ request, document, schema }: any) {
-                // Пропускаем introspection-запросы
                 if (request.operationName === 'IntrospectionQuery') return;
 
                 const complexity = getComplexity({
@@ -77,6 +85,12 @@ const MAX_COMPLEXITY = 50;
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Глобальный перехватчик времени обработки запроса
+    { provide: APP_INTERCEPTOR, useClass: TimingInterceptor },
+    // Глобальный перехватчик ETag для клиентского кэширования
+    { provide: APP_INTERCEPTOR, useClass: EtagInterceptor },
+  ],
 })
 export class AppModule {}
