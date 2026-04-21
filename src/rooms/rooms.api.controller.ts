@@ -28,7 +28,9 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { CacheInterceptor, Cache } from '@nestjs/cache-manager';
+import { Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Response } from 'express';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -43,6 +45,7 @@ export class RoomsApiController {
   constructor(
     private readonly roomsService: RoomsService,
     private readonly storageService: StorageService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   @UseInterceptors(CacheInterceptor)
@@ -136,7 +139,10 @@ export class RoomsApiController {
     const ext = file.originalname.split('.').pop() ?? 'jpg';
     const key = `rooms/${id}-${Date.now()}.${ext}`;
     const imageUrl = await this.storageService.upload(key, file.buffer, file.mimetype);
-    return this.roomsService.update(id, { imageUrl } as UpdateRoomDto);
+    const updated = await this.roomsService.update(id, { imageUrl } as UpdateRoomDto);
+    // Инвалидируем кэш чтобы GET /api/rooms вернул актуальные данные
+    await this.cacheManager.clear();
+    return updated;
   }
 
   @Delete(':id')
