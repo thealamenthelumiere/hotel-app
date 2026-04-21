@@ -27,4 +27,9 @@ export class CreateRoomDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @ApiProperty({ example: 'https://storage.yandexcloud.net/...', required: false })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 }

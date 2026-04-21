@@ -19,4 +19,7 @@ export class RoomType {
 
   @Field({ nullable: true, description: 'Описание номера' })
   description?: string;
+
+  @Field({ nullable: true, description: 'URL фото номера в объектном хранилище' })
+  imageUrl?: string;
 }
