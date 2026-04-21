@@ -12,6 +12,15 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // CORS — разрешаем браузерам слать Authorization-заголовок с JWT
+  app.enableCors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'If-None-Match'],
+    exposedHeaders: ['ETag', 'X-Elapsed-Time', 'X-Total-Count', 'Link', 'Cache-Control'],
+    credentials: true,
+  });
+
   // Статические файлы и шаблоны
   app.useStaticAssets(join(__dirname, '..', 'src', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
@@ -38,16 +47,25 @@ async function bootstrap() {
   // Глобальный фильтр исключений
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Swagger
+  // Swagger с поддержкой Bearer-авторизации (замочки на защищённых методах)
   const config = new DocumentBuilder()
     .setTitle('Hotel API')
-    .setDescription('REST API для системы бронирования отеля «Талион Империал»')
+    .setDescription(
+      'REST API для системы бронирования отеля «Талион Империал».\n\n' +
+      'GET-эндпоинты публичны. POST/PUT/PATCH/DELETE требуют Bearer JWT.\n' +
+      'Получить токен: **POST /api/auth/login**',
+    )
     .setVersion('1.0')
+    .addTag('auth', 'Аутентификация')
     .addTag('rooms', 'Управление номерами')
     .addTag('bookings', 'Бронирования')
     .addTag('guests', 'Гости')
     .addTag('services', 'Дополнительные услуги')
     .addTag('payments', 'Платежи')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'JWT',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);

@@ -16,15 +16,16 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) return true;
 
-    const request = context.switchToHttp().getRequest<Request>();
-    const session = request.session as { userId?: string; userRole?: string };
+    const req = context.switchToHttp().getRequest<Request>();
 
-    if (!session?.userId) {
-      throw new ForbiddenException('Необходима авторизация');
-    }
+    // Получаем роль из JWT-payload (установлен AuthGuard) или из сессии
+    const user = (req as any).user as { role?: string } | undefined;
+    const session = req.session as { userRole?: string };
+    const role = user?.role ?? session?.userRole;
 
-    if (!requiredRoles.includes(session.userRole as UserRole)) {
-      throw new ForbiddenException('Недостаточно прав');
+    if (!role) throw new ForbiddenException('Необходима авторизация');
+    if (!requiredRoles.includes(role as UserRole)) {
+      throw new ForbiddenException('Недостаточно прав. Требуется: ' + requiredRoles.join(', '));
     }
 
     return true;

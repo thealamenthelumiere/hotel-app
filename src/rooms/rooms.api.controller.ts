@@ -17,6 +17,8 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  UseGuards,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -26,11 +28,10 @@ import {
   ApiQuery,
   ApiConsumes,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CacheInterceptor, Cache } from '@nestjs/cache-manager';
-import { Inject } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheInterceptor, Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Response } from 'express';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -38,6 +39,9 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './entities/room.entity';
 import { paginate, PaginationQuery } from '../common/pagination';
 import { StorageService } from '../storage/storage.service';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @ApiTags('rooms')
 @Controller('api/rooms')
@@ -75,18 +79,22 @@ export class RoomsApiController {
   }
 
   @Post()
+  @ApiBearerAuth('JWT')
   @ApiOperation({ summary: 'Создать номер' })
   @ApiResponse({ status: 201, description: 'Номер создан', type: Room })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 401, description: 'Требуется авторизация' })
   create(@Body() createRoomDto: CreateRoomDto) {
     return this.roomsService.create(createRoomDto);
   }
 
   @Put(':id')
+  @ApiBearerAuth('JWT')
   @ApiOperation({ summary: 'Полное обновление номера (все поля)' })
   @ApiParam({ name: 'id', description: 'UUID номера' })
   @ApiResponse({ status: 200, description: 'Номер обновлён', type: Room })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 401, description: 'Требуется авторизация' })
   @ApiResponse({ status: 404, description: 'Номер не найден' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -96,10 +104,12 @@ export class RoomsApiController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth('JWT')
   @ApiOperation({ summary: 'Частичное обновление номера (отдельные поля)' })
   @ApiParam({ name: 'id', description: 'UUID номера' })
   @ApiResponse({ status: 200, description: 'Номер обновлён', type: Room })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 401, description: 'Требуется авторизация' })
   @ApiResponse({ status: 404, description: 'Номер не найден' })
   patch(
     @Param('id', ParseUUIDPipe) id: string,
@@ -109,6 +119,7 @@ export class RoomsApiController {
   }
 
   @Post(':id/image')
+  @ApiBearerAuth('JWT')
   @ApiOperation({ summary: 'Загрузить фото номера в Yandex Object Storage' })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', description: 'UUID номера' })
@@ -116,12 +127,13 @@ export class RoomsApiController {
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary', description: 'Фото номера (jpg/png/webp, до 5MB)' },
+        file: { type: 'string', format: 'binary', description: 'Фото (jpg/png/webp, до 5MB)' },
       },
     },
   })
   @ApiResponse({ status: 201, description: 'Фото загружено, ссылка сохранена', type: Room })
   @ApiResponse({ status: 400, description: 'Неверный формат или размер файла' })
+  @ApiResponse({ status: 401, description: 'Требуется авторизация' })
   @ApiResponse({ status: 404, description: 'Номер не найден' })
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
@@ -140,16 +152,20 @@ export class RoomsApiController {
     const key = `rooms/${id}-${Date.now()}.${ext}`;
     const imageUrl = await this.storageService.upload(key, file.buffer, file.mimetype);
     const updated = await this.roomsService.update(id, { imageUrl } as UpdateRoomDto);
-    // Инвалидируем кэш чтобы GET /api/rooms вернул актуальные данные
     await this.cacheManager.clear();
     return updated;
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Удалить номер' })
+  @ApiBearerAuth('JWT')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Удалить номер (только администратор)' })
   @ApiParam({ name: 'id', description: 'UUID номера' })
   @ApiResponse({ status: 204, description: 'Номер удалён' })
+  @ApiResponse({ status: 401, description: 'Требуется авторизация' })
+  @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   @ApiResponse({ status: 404, description: 'Номер не найден' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.roomsService.remove(id);
