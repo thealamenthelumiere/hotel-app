@@ -21,21 +21,12 @@ export class TimingInterceptor implements NestInterceptor {
       const http = context.switchToHttp();
       const req = http.getRequest<Request>();
       const res = http.getResponse<Response>();
-      const isApi = req.path.startsWith('/api/');
 
       return next.handle().pipe(
         map(data => {
           const elapsed = Date.now() - start;
           this.logger.log(`[${req.method}] ${req.path} — ${elapsed}ms`);
-
-          if (isApi) {
-            res.setHeader('X-Elapsed-Time', `${elapsed}ms`);
-            return data;
-          }
-          // MVC: inject serverTime into template context
-          if (data && typeof data === 'object') {
-            return { ...data, serverTime: elapsed };
-          }
+          res.setHeader('X-Elapsed-Time', `${elapsed}ms`);
           return data;
         }),
       );
