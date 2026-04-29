@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookingsService } from './bookings.service';
 import { BookingsController } from './bookings.controller';
 import { BookingsApiController } from './bookings.api.controller';
+import { BookingsResolver } from './bookings.resolver';
 import { Booking } from './entities/booking.entity';
 import { GuestsModule } from '../guests/guests.module';
 import { RoomsModule } from '../rooms/rooms.module';
@@ -16,7 +17,7 @@ import { ServicesModule } from '../services/services.module';
     ServicesModule,
   ],
   controllers: [BookingsController, BookingsApiController],
-  providers: [BookingsService],
+  providers: [BookingsService, BookingsResolver],
   exports: [BookingsService],
 })
 export class BookingsModule {}

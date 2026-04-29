@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Put,
+  Patch,
   Delete,
   ParseUUIDPipe,
   HttpCode,
@@ -63,11 +64,25 @@ export class PaymentsApiController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить платёж' })
+  @ApiOperation({ summary: 'Полное обновление платежа' })
   @ApiParam({ name: 'id', description: 'UUID платежа' })
   @ApiResponse({ status: 200, description: 'Платёж обновлён', type: Payment })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiResponse({ status: 404, description: 'Платёж не найден' })
   update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updatePaymentDto: UpdatePaymentDto,
+  ) {
+    return this.paymentsService.update(id, updatePaymentDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Частичное обновление платежа' })
+  @ApiParam({ name: 'id', description: 'UUID платежа' })
+  @ApiResponse({ status: 200, description: 'Платёж обновлён', type: Payment })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 404, description: 'Платёж не найден' })
+  patch(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePaymentDto: UpdatePaymentDto,
   ) {

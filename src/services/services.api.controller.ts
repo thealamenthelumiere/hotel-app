@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Put,
+  Patch,
   Delete,
   ParseUUIDPipe,
   HttpCode,
@@ -62,11 +63,25 @@ export class ServicesApiController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить услугу' })
+  @ApiOperation({ summary: 'Полное обновление услуги' })
   @ApiParam({ name: 'id', description: 'UUID услуги' })
   @ApiResponse({ status: 200, description: 'Услуга обновлена', type: Service })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiResponse({ status: 404, description: 'Услуга не найдена' })
   update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateServiceDto: UpdateServiceDto,
+  ) {
+    return this.servicesService.update(id, updateServiceDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Частичное обновление услуги' })
+  @ApiParam({ name: 'id', description: 'UUID услуги' })
+  @ApiResponse({ status: 200, description: 'Услуга обновлена', type: Service })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации' })
+  @ApiResponse({ status: 404, description: 'Услуга не найдена' })
+  patch(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateServiceDto: UpdateServiceDto,
   ) {
