@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import session = require('express-session');
 import methodOverride = require('method-override');
 import { AppModule } from './app.module';
 import { UsersService } from './users/users.service';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -28,11 +30,24 @@ async function bootstrap() {
   // Method override: позволяет формам отправлять PUT и DELETE через POST + ?_method=PUT
   app.use(methodOverride('_method'));
 
+  // Глобальная валидация DTO
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: false, transform: true }),
+  );
+
+  // Глобальный фильтр исключений
+  app.useGlobalFilters(new HttpExceptionFilter());
+
   // Swagger
   const config = new DocumentBuilder()
     .setTitle('Hotel API')
-    .setDescription('API documentation')
+    .setDescription('REST API для системы бронирования отеля «Талион Империал»')
     .setVersion('1.0')
+    .addTag('rooms', 'Управление номерами')
+    .addTag('bookings', 'Бронирования')
+    .addTag('guests', 'Гости')
+    .addTag('services', 'Дополнительные услуги')
+    .addTag('payments', 'Платежи')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
