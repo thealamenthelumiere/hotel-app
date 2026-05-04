@@ -68,7 +68,32 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    customJsStr: `
+      (function() {
+        const _fetch = window.fetch;
+        window.fetch = async function(...args) {
+          const response = await _fetch.apply(this, args);
+          try {
+            const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url) || '';
+            if (url.includes('/api/auth/login')) {
+              const body = await response.clone().json();
+              if (body && body.accessToken && window.ui) {
+                window.ui.authActions.authorize({
+                  JWT: {
+                    name: 'JWT',
+                    schema: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+                    value: body.accessToken,
+                  },
+                });
+              }
+            }
+          } catch(e) {}
+          return response;
+        };
+      })();
+    `,
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
