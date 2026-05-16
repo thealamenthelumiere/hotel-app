@@ -71,6 +71,28 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document, {
     customJsStr: `
       (function() {
+        // Авторизуем Swagger токеном из localStorage (если пользователь уже вошёл на сайте)
+        const TOKEN_KEY = 'access_token';
+
+        function authorizeSwagger(token) {
+          if (!token || !window.ui) return;
+          window.ui.authActions.authorize({
+            JWT: {
+              name: 'JWT',
+              schema: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+              value: token,
+            },
+          });
+        }
+
+        // Ждём инициализации Swagger UI, затем подставляем токен из localStorage
+        const waitForUi = setInterval(function() {
+          if (!window.ui) return;
+          clearInterval(waitForUi);
+          authorizeSwagger(localStorage.getItem(TOKEN_KEY));
+        }, 50);
+
+        // Перехватываем fetch: после POST /api/auth/login сохраняем токен и авторизуем
         const _fetch = window.fetch;
         window.fetch = async function(...args) {
           const response = await _fetch.apply(this, args);
@@ -78,14 +100,9 @@ async function bootstrap() {
             const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url) || '';
             if (url.includes('/api/auth/login')) {
               const body = await response.clone().json();
-              if (body && body.accessToken && window.ui) {
-                window.ui.authActions.authorize({
-                  JWT: {
-                    name: 'JWT',
-                    schema: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-                    value: body.accessToken,
-                  },
-                });
+              if (body && body.accessToken) {
+                localStorage.setItem(TOKEN_KEY, body.accessToken);
+                authorizeSwagger(body.accessToken);
               }
             }
           } catch(e) {}
