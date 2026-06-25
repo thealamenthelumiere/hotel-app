@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -19,6 +19,9 @@ import { PaymentsModule } from './payments/payments.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { ServicesModule } from './services/services.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/auth.guard';
+import { AuthSessionMiddleware } from './auth/auth-session.middleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TimingInterceptor } from './common/interceptors/timing.interceptor';
@@ -32,11 +35,15 @@ const MAX_COMPLEXITY = 50;
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
     }),
-    // Серверный in-memory кэш (TTL 5 секунд, используется для номеров)
     CacheModule.register({
       isGlobal: true,
-      ttl: 5000, // 5 секунд в миллисекундах
+      ttl: 5000,
       max: 100,
+    }),
+    // Динамический модуль аутентификации: конфигурация вычитывается при старте
+    AuthModule.forRoot({
+      jwtSecret: process.env.JWT_SECRET || 'hotel-jwt-secret-change-in-production',
+      jwtExpiresIn: '1d',
     }),
     GuestsModule,
     BookingsModule,
@@ -87,10 +94,17 @@ const MAX_COMPLEXITY = 50;
   controllers: [AppController],
   providers: [
     AppService,
-    // Глобальный перехватчик времени обработки запроса
+    // Глобальный guard аутентификации: GET /api/* публичны, мутации требуют JWT
+    { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_INTERCEPTOR, useClass: TimingInterceptor },
-    // Глобальный перехватчик ETag для клиентского кэширования
     { provide: APP_INTERCEPTOR, useClass: EtagInterceptor },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  // Middleware для MVC-маршрутов: перенаправляет неаутентифицированных пользователей
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthSessionMiddleware)
+      .forRoutes('constructor', 'bookings');
+  }
+}

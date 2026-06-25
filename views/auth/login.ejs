@@ -30,3 +30,21 @@
 
 <%- include('../partials/footer') %>
 <%- include('../partials/scripts') %>
+<script>
+  document.querySelector('form').addEventListener('submit', async function (e) {
+    const email = document.querySelector('[name=email]').value;
+    const password = document.querySelector('[name=password]').value;
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        const { accessToken } = await res.json();
+        window.api.setToken(accessToken);
+      }
+    } catch {}
+    // Форма продолжает submit для сессионной авторизации
+  });
+</script>

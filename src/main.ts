@@ -12,6 +12,15 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // CORS — разрешаем браузерам слать Authorization-заголовок с JWT
+  app.enableCors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'If-None-Match'],
+    exposedHeaders: ['ETag', 'X-Elapsed-Time', 'X-Total-Count', 'Link', 'Cache-Control'],
+    credentials: true,
+  });
+
   // Статические файлы и шаблоны
   app.useStaticAssets(join(__dirname, '..', 'src', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
@@ -38,19 +47,70 @@ async function bootstrap() {
   // Глобальный фильтр исключений
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Swagger
+  // Swagger с поддержкой Bearer-авторизации (замочки на защищённых методах)
   const config = new DocumentBuilder()
     .setTitle('Hotel API')
-    .setDescription('REST API для системы бронирования отеля «Талион Империал»')
+    .setDescription(
+      'REST API для системы бронирования отеля «Талион Империал».\n\n' +
+      'GET-эндпоинты публичны. POST/PUT/PATCH/DELETE требуют Bearer JWT.\n' +
+      'Получить токен: **POST /api/auth/login**',
+    )
     .setVersion('1.0')
+    .addTag('auth', 'Аутентификация')
     .addTag('rooms', 'Управление номерами')
     .addTag('bookings', 'Бронирования')
     .addTag('guests', 'Гости')
     .addTag('services', 'Дополнительные услуги')
     .addTag('payments', 'Платежи')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'JWT',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    customJsStr: `
+      (function() {
+        // Авторизуем Swagger токеном из localStorage (если пользователь уже вошёл на сайте)
+        const TOKEN_KEY = 'access_token';
+
+        function authorizeSwagger(token) {
+          if (!token || !window.ui) return;
+          window.ui.authActions.authorize({
+            JWT: {
+              name: 'JWT',
+              schema: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+              value: token,
+            },
+          });
+        }
+
+        // Ждём инициализации Swagger UI, затем подставляем токен из localStorage
+        const waitForUi = setInterval(function() {
+          if (!window.ui) return;
+          clearInterval(waitForUi);
+          authorizeSwagger(localStorage.getItem(TOKEN_KEY));
+        }, 50);
+
+        // Перехватываем fetch: после POST /api/auth/login сохраняем токен и авторизуем
+        const _fetch = window.fetch;
+        window.fetch = async function(...args) {
+          const response = await _fetch.apply(this, args);
+          try {
+            const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url) || '';
+            if (url.includes('/api/auth/login')) {
+              const body = await response.clone().json();
+              if (body && body.accessToken) {
+                localStorage.setItem(TOKEN_KEY, body.accessToken);
+                authorizeSwagger(body.accessToken);
+              }
+            }
+          } catch(e) {}
+          return response;
+        };
+      })();
+    `,
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

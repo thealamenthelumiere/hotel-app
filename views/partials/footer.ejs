@@ -1,22 +1,29 @@
 <footer class="footer">
   <div class="container">
     <p>© 2025 Талион Империал. Все права защищены.</p>
-    <% if (typeof serverTime !== 'undefined') { %>
-    <p class="timing-info" style="font-size:0.75rem;color:#888;margin-top:4px;">
-      Время обработки на сервере: <strong><%= serverTime %>ms</strong>
+    <p class="timing-info" id="timing-info" style="font-size:0.75rem;color:#888;margin-top:4px;display:none;">
+      Время на сервере: <strong id="server-time-label">—</strong>
       <span id="client-time-label"></span>
     </p>
     <script>
       (function() {
+        fetch(location.href, { method: 'HEAD' }).then(function(res) {
+          var elapsed = res.headers.get('X-Elapsed-Time');
+          if (elapsed) {
+            document.getElementById('server-time-label').textContent = elapsed;
+            document.getElementById('timing-info').style.display = 'block';
+          }
+        }).catch(function() {});
+
         var perfEntry = performance.getEntriesByType('navigation')[0];
         if (perfEntry) {
           var clientMs = Math.round(perfEntry.domContentLoadedEventEnd - perfEntry.fetchStart);
           document.getElementById('client-time-label').textContent =
             ' · Время на клиенте: ' + clientMs + 'ms';
+          document.getElementById('timing-info').style.display = 'block';
         }
       })();
     </script>
-    <% } %>
   </div>
 </footer>
 </body>
